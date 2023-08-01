@@ -59,8 +59,8 @@ public class User extends BaseTimeEntity {
         this.provider = provider;
         this.providerId = providerId;
         this.imageUrl = imageUrl;
-        this.status = status;
         this.role = role;
+        this.status = status;
     }
 
     public static User createUser(String email, String nickname, String provider, String providerId, String imageUrl) {
