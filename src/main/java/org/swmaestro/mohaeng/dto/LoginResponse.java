@@ -11,6 +11,9 @@ public class LoginResponse {
     private String nickName;
     private String email;
     private String imageUrl;
+    private String tokenType;
+    private String accessToken;
+    private String refreshToken;
 
     @Builder
     public LoginResponse(Long id, String nickName, String email, String imageUrl, String tokenType, String accessToken, String refreshToken) {
@@ -18,5 +21,8 @@ public class LoginResponse {
         this.nickName = nickName;
         this.email = email;
         this.imageUrl = imageUrl;
+        this.tokenType = tokenType;
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.swmaestro.mohaeng.component.jwt.JwtTokenProvider;
 import org.swmaestro.mohaeng.domain.user.KakaoUserInfo;
 import org.swmaestro.mohaeng.domain.user.OAuth2UserInfo;
 import org.swmaestro.mohaeng.domain.user.User;
@@ -32,6 +33,7 @@ public class OAuthService {
 
     private final InMemoryClientRegistrationRepository inMemoryRepository;
     private final UserRepository userRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
 
     /**
@@ -48,11 +50,18 @@ public class OAuthService {
         OAuthTokenResponse tokenResponse = getToken(clientRegistration, code);
         User user = getUserProfile(provider, tokenResponse, clientRegistration);
 
+        String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(user.getId()));
+        String refreshToken = jwtTokenProvider.createRefreshToken();
+
+
         return LoginResponse.builder()
                 .id(user.getId())
                 .nickName(user.getNickName())
                 .email(user.getEmail())
                 .imageUrl(user.getImageUrl())
+                .tokenType(BEARER_TYPE)
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 
