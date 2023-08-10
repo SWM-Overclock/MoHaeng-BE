@@ -12,13 +12,15 @@ import org.swmaestro.mohaeng.service.OAuthService;
 @RequiredArgsConstructor
 @Slf4j
 @RestController
+@RequestMapping("/login")
 public class OAuthController {
     private final OAuthService oAuthService;
 
-    @PostMapping("/login/oauth/{provider}")
+    @PostMapping("/{provider}")
     public ResponseEntity<LoginResponse> login(@PathVariable String provider, @RequestBody LoginRequest loginRequest) {
-        log.info("provider: {}, code: {}", provider, loginRequest.getCode());
-        LoginResponse loginResponse = oAuthService.login(provider, loginRequest.getCode());
+        log.info("provider: {}, token: {}", provider, loginRequest.getToken());
+
+        LoginResponse loginResponse = oAuthService.login(provider, loginRequest.getToken());
         return ResponseEntity.ok().body(loginResponse);
     }
 }

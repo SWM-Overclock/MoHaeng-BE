@@ -38,17 +38,18 @@ public class OAuthService {
 
     /**
      * @InMemoryRepository application-oauth properties 정보를 담고 있음
-     * @getToken() 넘겨받은 code를 이용하여 Oauth 서버에 Token 요청
+     * @param provider OAuth2 제공자
+     * @param token OAuth2 제공자로부터 받은 Token
+     * Kakao의 경우 Token을 이용하여 User 정보를 요청
      * @getUserProfile Oauth 서버에 Token을 이용하여 User 정보 요청
      * @return LoginResponse
      */
     @Transactional
-    public LoginResponse login(String provider, String code) {
+    public LoginResponse login(String provider, String token) {
 
         log.info("in OAuthService");
         ClientRegistration clientRegistration = inMemoryRepository.findByRegistrationId(provider);
-        OAuthTokenResponse tokenResponse = getToken(clientRegistration, code);
-        User user = getUserProfile(provider, tokenResponse, clientRegistration);
+        User user = getUserProfile(provider, token, clientRegistration);
 
         String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(user.getId()));
         String refreshToken = jwtTokenProvider.createRefreshToken();
@@ -65,37 +66,15 @@ public class OAuthService {
                 .build();
     }
 
-    private OAuthTokenResponse getToken(ClientRegistration provider, String code) {
-        log.info("OauthService.getToken In");
-        log.info("provider.TokenUri = {}" , provider.getProviderDetails().getTokenUri());
-        return WebClient.create()
-                .post()
-                .uri(provider.getProviderDetails().getTokenUri())
-                .headers(header -> {
-                    header.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-                    header.setAcceptCharset(Collections.singletonList(StandardCharsets.UTF_8));
-                    log.info("header = {}", header);
-                })
-                .bodyValue(tokenRequest(code, provider))
-                .retrieve()
-                .bodyToMono(OAuthTokenResponse.class)
-                .block();
-    }
-
-    private MultiValueMap<String, String> tokenRequest(String code, ClientRegistration provider) {
-        log.info("tokenRequest In");
-        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-        formData.add("code", code);
-        formData.add("grant_type", "authorization_code");
-        formData.add("redirect_uri", provider.getRedirectUri());
-        formData.add("client_secret",provider.getClientSecret());
-        formData.add("client_id",provider.getClientId());
-        log.info("redirectUri = {}", provider.getRedirectUri());
-        return formData;
-    }
-
-    private User getUserProfile(String provider, OAuthTokenResponse tokenResponse, ClientRegistration clientRegistration) {
-        Map<String, Object> userAttributes = getUserAttributes(clientRegistration, tokenResponse);
+    /**
+     * @param provider OAuth2 제공자
+     * @param token OAuth2 제공자로부터 받은 Token
+     * @param clientRegistration OAuth2 제공자 정보
+     * @getUserAttributes Oauth 서버에 Token을 이용하여 User 정보 요청
+     * @return User 정보
+     */
+    private User getUserProfile(String provider, String token, ClientRegistration clientRegistration) {
+        Map<String, Object> userAttributes = getUserAttributes(clientRegistration, token);
         OAuth2UserInfo oAuth2UserInfo = null;
         if (provider.equals("kakao")) {
             oAuth2UserInfo = new KakaoUserInfo(userAttributes);
@@ -118,13 +97,13 @@ public class OAuthService {
         return userEntity;
     }
 
-    private Map<String, Object> getUserAttributes(ClientRegistration provider, OAuthTokenResponse tokenResponse) {
+    private Map<String, Object> getUserAttributes(ClientRegistration provider, String token) {
         log.info("getUserAttributes In");
         log.info("userinfoUri = {}", provider.getProviderDetails().getUserInfoEndpoint().getUri());
         return WebClient.create()
                 .get()
                 .uri(provider.getProviderDetails().getUserInfoEndpoint().getUri())
-                .headers(header -> header.setBearerAuth(tokenResponse.getAccessToken()))
+                .headers(header -> header.setBearerAuth(token))
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
                 .block();

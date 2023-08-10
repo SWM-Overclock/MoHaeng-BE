@@ -1,14 +1,15 @@
 package org.swmaestro.mohaeng.dto;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import javax.validation.constraints.NotBlank;
 
 @Getter
-@NoArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@ToString
 public class LoginRequest {
-    private String code;
 
-    public LoginRequest(String code) {
-        this.code = code;
-    }
+    @NotBlank(message = "토큰을 입력해주세요.")
+    private String token;
 }
