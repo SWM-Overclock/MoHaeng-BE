@@ -13,6 +13,7 @@ import org.swmaestro.mohaeng.domain.user.KakaoUserInfo;
 import org.swmaestro.mohaeng.domain.user.OAuth2UserInfo;
 import org.swmaestro.mohaeng.domain.user.User;
 import org.swmaestro.mohaeng.dto.LoginResponse;
+import org.swmaestro.mohaeng.exception.ClientRegistrationNotFoundException;
 import org.swmaestro.mohaeng.repository.UserRepository;
 
 import java.util.Map;
@@ -42,6 +43,10 @@ public class OAuthService {
         log.info("OAuth Service login initiated");
 
         ClientRegistration clientRegistration = inMemoryRepository.findByRegistrationId(provider);
+        if (clientRegistration == null) {
+            throw new ClientRegistrationNotFoundException("No client registration found for provider: " + provider);
+        }
+
         User user = getUserProfile(provider, token, clientRegistration);
 
         String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(user.getEmail()));
