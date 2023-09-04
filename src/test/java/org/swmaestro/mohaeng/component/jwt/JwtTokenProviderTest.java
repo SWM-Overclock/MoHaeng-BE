@@ -4,8 +4,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.swmaestro.mohaeng.service.RedisService;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,7 +16,10 @@ public class JwtTokenProviderTest {
     @InjectMocks
     private JwtTokenProvider jwtTokenProvider;
 
-    private final String defaultSecretKey = "secret-test-key";
+    @Mock
+    private RedisService redisService;
+
+    private final String defaultSecretKey = "secretTestKey";
     private final long accessTokenValidity = 3600000; // 1 hour in milliseconds for testing
     private final long refreshTokenValidity = 36000000; // 10 hours in milliseconds for testing
 
@@ -35,7 +40,7 @@ public class JwtTokenProviderTest {
     @Test
     @DisplayName("액세스 토큰 생성 테스트")
     public void testCreateAccessToken() {
-        String payload = "test@mohaneg.org";
+        String payload = "test@mohaeng.org";
         String token = jwtTokenProvider.createAccessToken(payload);
         assertNotNull(token);
         assertEquals(payload, jwtTokenProvider.getPayload(token));
@@ -44,7 +49,8 @@ public class JwtTokenProviderTest {
     @Test
     @DisplayName("리프레시 토큰 생성 테스트")
     public void testCreateRefreshToken() {
-        String token = jwtTokenProvider.createRefreshToken();
+        String payload = "test@mohaeng.org";
+        String token = jwtTokenProvider.createRefreshToken(payload);
         assertNotNull(token);
     }
 

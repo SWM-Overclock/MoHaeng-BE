@@ -50,8 +50,7 @@ public class OAuthService {
         User user = getUserProfile(provider, token, clientRegistration);
 
         String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(user.getEmail()));
-        String refreshToken = jwtTokenProvider.createRefreshToken();
-
+        String refreshToken = jwtTokenProvider.createRefreshToken(String.valueOf(user.getEmail()));
 
         return LoginResponse.builder()
                 .id(user.getId())
