@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.swmaestro.mohaeng.service.RedisService;
 
@@ -19,7 +20,7 @@ public class JwtTokenProviderTest {
     @Mock
     private RedisService redisService;
 
-    private final String defaultSecretKey = "secretTestKey";
+    private final String defaultSecretKey = "secretTestKeysecretTestKeysecretTestKeysecretTestKey";
     private final long accessTokenValidity = 3600000; // 1 hour in milliseconds for testing
     private final long refreshTokenValidity = 36000000; // 10 hours in milliseconds for testing
 
