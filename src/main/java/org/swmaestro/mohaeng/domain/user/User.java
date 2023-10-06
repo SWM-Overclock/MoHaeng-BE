@@ -82,4 +82,8 @@ public class User extends BaseTimeEntity {
     public void addLocation(Location location) {
         this.locations.add(location);
     }
+  
+    public void updateProfileImage(String updatedImageUrl) {
+        this.imageUrl = updatedImageUrl;
+    }
 }

@@ -1,3 +1,10 @@
+
+spring:
+  profiles:
+    include: oauth
+
+---
+
 spring:
   datasource:
     driver-class-name: org.h2.Driver
@@ -16,3 +23,4 @@ spring:
   redis:
     host: localhost
     port: 6379
+
