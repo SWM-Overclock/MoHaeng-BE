@@ -1,6 +1,9 @@
 package org.swmaestro.mohaeng.domain.user;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.swmaestro.mohaeng.domain.BaseTimeEntity;
 import org.swmaestro.mohaeng.domain.Location;
 import org.swmaestro.mohaeng.domain.Role;
@@ -10,7 +13,6 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Setter
 @Getter
 @Entity
 @Table(name = "`user`")
@@ -57,8 +59,8 @@ public class User extends BaseTimeEntity {
         this.provider = provider;
         this.providerId = providerId;
         this.imageUrl = imageUrl;
-        this.role = role;
         this.status = status;
+        this.role = role;
     }
 
     public static User createUser(String email, String nickname, String provider, String providerId, String imageUrl) {
@@ -80,7 +82,7 @@ public class User extends BaseTimeEntity {
     public void addLocation(Location location) {
         this.locations.add(location);
     }
-
+  
     public void updateProfileImage(String updatedImageUrl) {
         this.imageUrl = updatedImageUrl;
     }
