@@ -1,0 +1,6 @@
+FROM openjdk:17
+ARG JAR_FILE=build/libs/mohaeng-test-0.0.1-SNAPSHOT.jar
+ARG ACTIVE_PROFILE
+COPY ${JAR_FILE} app.jar
+ENV SPRING_PROFILES_ACTIVE={ACTIVE_PROFILE}
+ENTRYPOINT ["java","-jar","/app.jar"]
