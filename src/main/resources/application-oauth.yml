@@ -4,10 +4,10 @@ spring:
       client:
         registration:
           kakao:
-            client-id: ${kakao-client-id}
-            redirect-uri: ${kakao-redirect-uri}
+            client-id: ${kakao_client_id}
+            redirect-uri: ${kakao_redirect_uri}
             client-authentication-method: POST
-            client-secret: ${kakao-client-secret}
+            client-secret: ${kakao_client_secret}
             authorization-grant-type: authorization_code
             scope:
               - profile_nickname
@@ -23,8 +23,8 @@ spring:
 
 jwt:
   token:
-    secret-key: ${jwt-secret-key}
+    secret-key: ${jwt_secret_key}
   access-token:
-    expire-length: ${jwt-access-token-expire-length}
+    expire-length: ${jwt_access_token_expire_length}
   refresh-token:
-    expire-length: ${jwt-refresh-token-expire-length}
+    expire-length: ${jwt_refresh_token_expire_length}
