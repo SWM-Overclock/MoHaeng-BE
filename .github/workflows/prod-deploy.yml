@@ -93,12 +93,14 @@ jobs:
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
           JWT_ACCESS_TOKEN_EXPIRE_LENGTH: ${{ secrets.JWT_ACCESS_TOKEN_EXPIRE_LENGTH }}
           JWT_REFRESH_TOKEN_EXPIRE_LENGTH: ${{ secrets.JWT_REFRESH_TOKEN_EXPIRE_LENGTH }}
+          ACTIVE_PROFILE: ${{ secrets.PROD_ACTIVE_PROFILE }}
+          REDIS_HOST: ${{ secrets.REDIS_HOST }}
         with:
           host: ${{ secrets.PROD_SSH_IP }}
           username: ${{ secrets.PROD_SSH_USERNAME }}
           key: ${{ secrets.PROD_SSH_KEY }}
           port: ${{ secrets.PROD_SSH_PORT }}
-          envs: SPRING_DATABASE_SCHEMA,SPRING_DATABASE_USERNAME,SPRING_DATABASE_PASSWORD,SPRING_DATABASE_HOST,IMAGE_TAG,DOCKERHUB_USERNAME,DOCKERHUB_REPOSITORY_NAME, KAKAO_CLIENT_ID, KAKAO_CLIENT_SECRET, KAKAO_REDIRECT_URI, JWT_SECRET_KEY, JWT_ACCESS_TOKEN_EXPIRE_LENGTH, JWT_REFRESH_TOKEN_EXPIRE_LENGTH
+          envs: SPRING_DATABASE_SCHEMA,SPRING_DATABASE_USERNAME,SPRING_DATABASE_PASSWORD,SPRING_DATABASE_HOST,IMAGE_TAG,DOCKERHUB_USERNAME,DOCKERHUB_REPOSITORY_NAME, KAKAO_CLIENT_ID, KAKAO_CLIENT_SECRET, KAKAO_REDIRECT_URI, JWT_SECRET_KEY, JWT_ACCESS_TOKEN_EXPIRE_LENGTH, JWT_REFRESH_TOKEN_EXPIRE_LENGTH, SPRING_ACTIVE_PROFILE, REDIS_HOST
           script: |
             cd compose
             sudo touch .env
@@ -115,7 +117,9 @@ jobs:
             kakao_redirect_uri=$KAKAO_REDIRECT_URI
             jwt_secret_key=$JWT_SECRET_KEY
             jwt_access_token_expire_length=$JWT_ACCESS_TOKEN_EXPIRE_LENGTH
-            jwt_refresh_token_expire_length=$JWT_REFRESH_TOKEN_EXPIRE_LENGTH" | sudo tee .env
+            jwt_refresh_token_expire_length=$JWT_REFRESH_TOKEN_EXPIRE_LENGTH
+            SPRING_ACTIVE_PROFILE=$ACTIVE_PROFILE
+            REDIS_HOST=$REDIS_HOST" | sudo tee .env
             sudo docker pull $DOCKERHUB_USERNAME/$DOCKERHUB_REPOSITORY_NAME:$IMAGE_TAG
             sudo docker-compose down
             sudo docker-compose up -d
