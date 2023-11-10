@@ -10,27 +10,11 @@ services:
     env_file:
       - .env
     depends_on:
-      - mysql
       - redis
     deploy:
       resources:
         limits:
           memory: 800M
-  mysql:
-    restart: always
-    container_name: mohaeng-mysql
-    image: mysql:8.0
-    ports:
-      - 3306:3306
-    volumes:
-      - mohaeng-volume:/var/lib/mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: ${SPRING_DATABASE_PASSWORD}
-      MYSQL_DATABASE: ${SPRING_DATABASE_SCHEMA}
-    deploy:
-      resources:
-        limits:
-          memory: 900M
   redis:
     restart: always
     container_name: mohaeng-redis
