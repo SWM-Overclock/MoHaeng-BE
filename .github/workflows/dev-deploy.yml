@@ -93,7 +93,7 @@ jobs:
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
           JWT_ACCESS_TOKEN_EXPIRE_LENGTH: ${{ secrets.JWT_ACCESS_TOKEN_EXPIRE_LENGTH }}
           JWT_REFRESH_TOKEN_EXPIRE_LENGTH: ${{ secrets.JWT_REFRESH_TOKEN_EXPIRE_LENGTH }}
-          ACTIVE_PROFILE: ${{ secrets.DEV_ACTIVE_PROFILE }}
+          SPRING_ACTIVE_PROFILE: ${{ secrets.DEV_ACTIVE_PROFILE }}
           REDIS_HOST: ${{ secrets.REDIS_HOST }}
         with:
           host: ${{ secrets.DEV_SSH_IP }}
