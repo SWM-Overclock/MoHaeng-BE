@@ -50,10 +50,14 @@ jobs:
       - name: Copy Docker files
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.PROD_SSH_IP }}
-          username: ${{ secrets.PROD_SSH_USERNAME }}
+          host: ${{ secrets.PROD_WAS01_IP }}, ${{ secrets.PROD_WAS02_IP }}
+          username: ${{ secrets.PROD_WAS_USERNAME }}
           key: ${{ secrets.PROD_SSH_KEY }}
-          port: ${{ secrets.PROD_SSH_PORT }}
+          port: ${{ secrets.PROD_WAS_PORT }}
+          proxy_host: ${{ secrets.PROD_BASTION_IP }}
+          proxy_username: ${{ secrets.PROD_BASTION_USERNAME }}
+          proxy_key: ${{ secrets.PROD_SSH_KEY }}
+          proxy_port: ${{ secrets.PROD_BASTION_PORT }}
           source: 'docker-compose.yml'
           target: 'compose'
           rm: true
@@ -68,12 +72,23 @@ jobs:
           IMAGE_TAG: ${{ secrets.IMAGE_TAG }}
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_REPOSITORY_NAME: ${{ secrets.PROD_DOCKERHUB_REPOSITORY_NAME }}
+          KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
+          KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
+          KAKAO_REDIRECT_URI: ${{ secrets.KAKAO_REDIRECT_URI }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          JWT_ACCESS_TOKEN_EXPIRE_LENGTH: ${{ secrets.JWT_ACCESS_TOKEN_EXPIRE_LENGTH }}
+          JWT_REFRESH_TOKEN_EXPIRE_LENGTH: ${{ secrets.JWT_REFRESH_TOKEN_EXPIRE_LENGTH }}
+          PROD_REDIS_HOST: ${{ secrets.PROD_REDIS_HOST }}
         with:
-          host: ${{ secrets.PROD_SSH_IP }}
-          username: ${{ secrets.PROD_SSH_USERNAME }}
+          host: ${{ secrets.PROD_WAS01_IP }}, ${{ secrets.PROD_WAS02_IP }}
+          username: ${{ secrets.PROD_WAS_USERNAME }}
           key: ${{ secrets.PROD_SSH_KEY }}
-          port: ${{ secrets.PROD_SSH_PORT }}
-          envs: SPRING_DATABASE_SCHEMA,SPRING_DATABASE_USERNAME,SPRING_DATABASE_PASSWORD,SPRING_DATABASE_HOST,IMAGE_TAG,DOCKERHUB_USERNAME,DOCKERHUB_REPOSITORY_NAME
+          port: ${{ secrets.PROD_WAS_PORT }}
+          proxy_host: ${{ secrets.PROD_BASTION_IP }}
+          proxy_username: ${{ secrets.PROD_BASTION_USERNAME }}
+          proxy_key: ${{ secrets.PROD_SSH_KEY }}
+          proxy_port: ${{ secrets.PROD_BASTION_PORT }}
+          envs: SPRING_DATABASE_SCHEMA,SPRING_DATABASE_USERNAME,SPRING_DATABASE_PASSWORD,SPRING_DATABASE_HOST,IMAGE_TAG,DOCKERHUB_USERNAME,DOCKERHUB_REPOSITORY_NAME, KAKAO_CLIENT_ID,KAKAO_CLIENT_SECRET,KAKAO_REDIRECT_URI,JWT_SECRET_KEY,JWT_ACCESS_TOKEN_EXPIRE_LENGTH,JWT_REFRESH_TOKEN_EXPIRE_LENGTH,PROD_REDIS_HOST
           script: |
             cd compose
             sudo touch .env
@@ -84,7 +99,14 @@ jobs:
             SPRING_DATABASE_HOST=$SPRING_DATABASE_HOST
             IMAGE_TAG=$IMAGE_TAG
             DOCKERHUB_USERNAME=$DOCKERHUB_USERNAME
-            DOCKERHUB_REPOSITORY_NAME=$DOCKERHUB_REPOSITORY_NAME" | sudo tee .env
+            DOCKERHUB_REPOSITORY_NAME=$DOCKERHUB_REPOSITORY_NAME
+            KAKAO_CLIENT_ID=$KAKAO_CLIENT_ID
+            KAKAO_CLIENT_SECRET=$KAKAO_CLIENT_SECRET
+            KAKAO_REDIRECT_URI=$KAKAO_REDIRECT_URI
+            JWT_SECRET_KEY=$JWT_SECRET_KEY
+            JWT_ACCESS_TOKEN_EXPIRE_LENGTH=$JWT_ACCESS_TOKEN_EXPIRE_LENGTH
+            JWT_REFRESH_TOKEN_EXPIRE_LENGTH=$JWT_REFRESH_TOKEN_EXPIRE_LENGTH
+            REDIS_HOST=$PROD_REDIS_HOST" | sudo tee .env
             sudo docker pull $DOCKERHUB_USERNAME/$DOCKERHUB_REPOSITORY_NAME:$IMAGE_TAG
             sudo docker-compose down
             sudo docker-compose up -d
