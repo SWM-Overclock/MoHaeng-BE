@@ -11,6 +11,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.swmaestro.mohaeng.service.RedisService;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 public class JwtTokenProviderTest {
 
@@ -77,5 +78,31 @@ public class JwtTokenProviderTest {
         String payload = "test@mohaeg.org";
         String token = jwtTokenProvider.createToken(payload, -1000);
         assertFalse(jwtTokenProvider.validateToken(token));
+    }
+
+    @Test
+    @DisplayName("리프레시 토큰 검증 테스트")
+    public void testValidateRefreshToken() {
+        String userEmail = "test@mohaeng.org";
+        String refreshToken = jwtTokenProvider.createRefreshToken(userEmail);
+        when(redisService.validateToken(userEmail, refreshToken)).thenReturn(true);
+
+        assertTrue(jwtTokenProvider.validateToken(refreshToken));
+    }
+
+
+    @Test
+    @DisplayName("리프레시 토큰 검증 실패 테스트")
+    public void testValidateRefreshTokenFail() {
+        String invalidRefreshToken = "invalidRefreshToken";
+        assertFalse(jwtTokenProvider.validateToken(invalidRefreshToken));
+    }
+
+
+    @Test
+    @DisplayName("액세스 토큰 재발급 실패 테스트")
+    public void testReissueAccessTokenFail() {
+        String invalidRefreshToken = "invalidRefreshToken";
+        assertThrows(RuntimeException.class, () -> jwtTokenProvider.reissueAccessToken(invalidRefreshToken));
     }
 }
