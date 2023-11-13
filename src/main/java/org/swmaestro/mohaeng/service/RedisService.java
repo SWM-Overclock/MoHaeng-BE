@@ -29,4 +29,8 @@ public class RedisService {
         String storedToken = getData(userEmail);
         return refreshToken.equals(storedToken);
     }
+
+    public String getEmailByRefreshToken(String refreshToken) {
+        return (String) redisTemplate.opsForValue().get(refreshToken);
+    }
 }

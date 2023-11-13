@@ -86,4 +86,16 @@ public class JwtTokenProvider {
             return false;
         }
     }
+
+    public String reissueAccessToken(String refreshToken) {
+        if (!validateToken(refreshToken)) {
+            throw new RuntimeException("유효하지 않은 리프레쉬 토큰 입니다");
+        }
+
+        String userEmail = redisService.getEmailByRefreshToken(refreshToken);
+        if (!redisService.validateToken(userEmail, refreshToken)) {
+            throw new RuntimeException("유효하지 않은 리프레쉬 토큰 입니다");
+        }
+        return createAccessToken(userEmail);
+    }
 }
