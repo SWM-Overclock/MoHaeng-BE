@@ -39,13 +39,32 @@ jobs:
         run: ./gradlew clean build -x test
 
       - name: Build image
-        run: docker build . -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROD_DOCKERHUB_REPOSITORY_NAME }}:${{ secrets.IMAGE_TAG }}
+        run: docker build --build-arg ACTIVE_PROFILE=${{ secrets.PROD_ACTIVE_PROFILE }} . -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROD_DOCKERHUB_REPOSITORY_NAME }}:${{ secrets.IMAGE_TAG }}
 
       - name: Docker login
         run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
 
       - name: Push image
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROD_DOCKERHUB_REPOSITORY_NAME }}:${{ secrets.IMAGE_TAG }}
+
+      - name: Get Github action IP
+        id: ip
+        uses: haythem/public-ip@v1.2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+      - name: Add Github Actions IP to Security group
+        run: |
+          aws ec2 authorize-security-group-ingress --group-id ${{ secrets.AWS_SG_ID }} --protocol tcp --port ${{ secrets.PROD_SSH_PORT }} --cidr ${{ steps.ip.outputs.ipv4 }}/32
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
 
       - name: Copy Docker files
         uses: appleboy/scp-action@master
@@ -100,13 +119,21 @@ jobs:
             IMAGE_TAG=$IMAGE_TAG
             DOCKERHUB_USERNAME=$DOCKERHUB_USERNAME
             DOCKERHUB_REPOSITORY_NAME=$DOCKERHUB_REPOSITORY_NAME
-            KAKAO_CLIENT_ID=$KAKAO_CLIENT_ID
-            KAKAO_CLIENT_SECRET=$KAKAO_CLIENT_SECRET
-            KAKAO_REDIRECT_URI=$KAKAO_REDIRECT_URI
-            JWT_SECRET_KEY=$JWT_SECRET_KEY
-            JWT_ACCESS_TOKEN_EXPIRE_LENGTH=$JWT_ACCESS_TOKEN_EXPIRE_LENGTH
-            JWT_REFRESH_TOKEN_EXPIRE_LENGTH=$JWT_REFRESH_TOKEN_EXPIRE_LENGTH
+            kakao_client_id=$KAKAO_CLIENT_ID
+            kakao_client_secret=$KAKAO_CLIENT_SECRET
+            kakao_redirect_uri=$KAKAO_REDIRECT_URI
+            jwt_secret_key=$JWT_SECRET_KEY
+            jwt_access_token_expire_length=$JWT_ACCESS_TOKEN_EXPIRE_LENGTH
+            jwt_refresh_token_expire_length=$JWT_REFRESH_TOKEN_EXPIRE_LENGTH
             REDIS_HOST=$PROD_REDIS_HOST" | sudo tee .env
             sudo docker pull $DOCKERHUB_USERNAME/$DOCKERHUB_REPOSITORY_NAME:$IMAGE_TAG
             sudo docker-compose down
             sudo docker-compose up -d
+
+      - name: Remove Github Actions IP from security group
+        run: |
+          aws ec2 revoke-security-group-ingress --group-id ${{ secrets.AWS_SG_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
