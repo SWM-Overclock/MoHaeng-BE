@@ -1,13 +1,15 @@
 package org.swmaestro.mohaeng.component.jwt;
 
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.*;
 import org.springframework.transaction.annotation.Transactional;
+import org.swmaestro.mohaeng.domain.user.auth.CustomUserDetails;
 import org.swmaestro.mohaeng.service.RedisService;
+import org.swmaestro.mohaeng.service.auth.CustomUserDetailsService;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -15,6 +17,7 @@ import java.util.Random;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class JwtTokenProvider {
 
@@ -28,10 +31,6 @@ public class JwtTokenProvider {
 
     @Value("${jwt.token.secret-key}")
     private String secretKey;
-
-    public JwtTokenProvider(RedisService redisService) {
-        this.redisService = redisService;
-    }
 
     public String createAccessToken(String payload) {
         return createToken(payload, accessTokenValidityInMilliseconds);
