@@ -60,7 +60,7 @@ jobs:
 
       - name: Add Github Actions IP to Security group
         run: |
-          aws ec2 authorize-security-group-ingress --group-id ${{ secrets.AWS_SG_ID }} --protocol tcp --port ${{ secrets.DEV_SSH_PORT }} --cidr ${{ steps.ip.outputs.ipv4 }}/32
+          aws ec2 authorize-security-group-ingress --group-id ${{ secrets.DEV_AWS_SG_ID }} --protocol tcp --port ${{ secrets.DEV_SSH_PORT }} --cidr ${{ steps.ip.outputs.ipv4 }}/32
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -72,7 +72,7 @@ jobs:
           host: ${{ secrets.DEV_WAS01_IP }}, ${{ secrets.DEV_WAS02_IP }}
           username: ${{ secrets.DEV_WAS_USERNAME }}
           key: ${{ secrets.DEV_SSH_KEY }}
-          port: ${{ secrets.DEV_WAS_PORT }}
+          port: ${{ secrets.DEV_SSH_PORT }}
           proxy_host: ${{ secrets.DEV_BASTION_IP }}
           proxy_username: ${{ secrets.DEV_BASTION_USERNAME }}
           proxy_key: ${{ secrets.DEV_SSH_KEY }}
@@ -102,7 +102,7 @@ jobs:
           host: ${{ secrets.DEV_WAS01_IP }}, ${{ secrets.DEV_WAS02_IP }}
           username: ${{ secrets.DEV_WAS_USERNAME }}
           key: ${{ secrets.DEV_SSH_KEY }}
-          port: ${{ secrets.DEV_WAS_PORT }}
+          port: ${{ secrets.DEV_SSH_PORT }}
           proxy_host: ${{ secrets.DEV_BASTION_IP }}
           proxy_username: ${{ secrets.DEV_BASTION_USERNAME }}
           proxy_key: ${{ secrets.DEV_SSH_KEY }}
