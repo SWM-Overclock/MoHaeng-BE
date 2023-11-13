@@ -9,22 +9,7 @@ services:
       - 8080:8080
     env_file:
       - .env
-    depends_on:
-      - redis
     deploy:
       resources:
         limits:
           memory: 800M
-  redis:
-    restart: always
-    container_name: mohaeng-redis
-    image: redis:6.0
-    ports:
-      - 6379:6379
-    deploy:
-      resources:
-        limits:
-          memory: 200M
-
-volumes:
-  mohaeng-volume:
