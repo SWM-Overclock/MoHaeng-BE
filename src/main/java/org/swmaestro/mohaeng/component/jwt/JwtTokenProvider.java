@@ -42,8 +42,7 @@ public class JwtTokenProvider {
         String generatedString = new String(array, StandardCharsets.UTF_8);
         String refreshToken = createToken(generatedString, refreshTokenValidityInMilliseconds);
 
-        redisService.setDataWithExpiration(userEmail, refreshToken, refreshTokenValidityInMilliseconds);
-
+        redisService.setDataWithExpiration(refreshToken, userEmail, refreshTokenValidityInMilliseconds);
         return refreshToken;
     }
 
@@ -91,7 +90,8 @@ public class JwtTokenProvider {
             throw new RuntimeException("유효하지 않은 리프레쉬 토큰 입니다");
         }
 
-        String userEmail = redisService.getEmailByRefreshToken(refreshToken);
+        String userEmail = redisService.getData(refreshToken);
+        log.info("userEmail: {}", userEmail);
         if (!redisService.validateToken(userEmail, refreshToken)) {
             throw new RuntimeException("유효하지 않은 리프레쉬 토큰 입니다");
         }
