@@ -26,11 +26,7 @@ public class RedisService {
     }
 
     public boolean validateToken(String userEmail, String refreshToken) {
-        String storedToken = getData(userEmail);
-        return refreshToken.equals(storedToken);
-    }
-
-    public String getEmailByRefreshToken(String refreshToken) {
-        return (String) redisTemplate.opsForValue().get(refreshToken);
+        String storedEmail = getData(refreshToken);
+        return userEmail.equals(storedEmail);
     }
 }
