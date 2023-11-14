@@ -16,7 +16,7 @@ public class AuthController {
 
     private final JwtTokenProvider jwtTokenProvider;
 
-    @PostMapping("/reissue")
+    @PostMapping("/token-reissue")
     public ResponseEntity<?> reissueToken(@RequestBody TokenRequest tokenRequest) {
         log.info("refreshToken: {}", tokenRequest.getRefreshToken());
         String newAccessToken = jwtTokenProvider.reissueAccessToken(tokenRequest.getRefreshToken());
