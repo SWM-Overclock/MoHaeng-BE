@@ -32,9 +32,7 @@ public class LocationController {
     public ResponseEntity<LocationCreateResponseDto> create(@AuthenticationPrincipal CustomUserDetails userDetails, @Valid @RequestBody LocationCreateRequestDto locationCreateRequestDto) {
 
         User user = userDetails.getUser();
-        if (user == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
-        }
+        validateUser(user);
         log.info("create a new location: {}", locationCreateRequestDto.getAddress());
         LocationCreateResponseDto locationCreateResponseDto = locationService.save(user, locationCreateRequestDto);
 
@@ -49,13 +47,16 @@ public class LocationController {
     @GetMapping("/list")
     public ResponseEntity<List<LocationListResponseDto>> getAllLocations(@AuthenticationPrincipal CustomUserDetails userDetails) {
         User user = userDetails.getUser();
-
         log.info("user: {}", user);
-        if (user == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
-        }
+        validateUser(user);
 
         List<LocationListResponseDto> locations = locationService.getAllLocations(user);
         return ResponseEntity.ok(locations);
+    }
+
+    private static void validateUser(User user) {
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
+        }
     }
 }
