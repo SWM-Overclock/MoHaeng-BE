@@ -47,6 +47,17 @@ public class Location extends BaseTimeEntity {
         this.isUsed = isUsed;
     }
 
+    public static Location of(User user, String name, String address, String latitude, String longitude) {
+        return Location.builder()
+                .user(user)
+                .name(name)
+                .address(address)
+                .latitude(latitude)
+                .longitude(longitude)
+                .isUsed(true)
+                .build();
+    }
+
     public void setUsed(boolean isUsed) {
         this.isUsed = isUsed;
     }

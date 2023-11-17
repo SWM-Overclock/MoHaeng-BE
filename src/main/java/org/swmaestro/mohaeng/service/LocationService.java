@@ -28,13 +28,6 @@ public class LocationService {
 
         user.addLocation(newLocation);
 
-        return LocationCreateResponseDto.builder()
-                .id(newLocation.getId())
-                .name(newLocation.getName())
-                .address(newLocation.getAddress())
-                .latitude(newLocation.getLatitude())
-                .longitude(newLocation.getLongitude())
-                .isUsed(newLocation.getIsUsed())
-                .build();
+        return LocationCreateResponseDto.of(newLocation);
     }
 }

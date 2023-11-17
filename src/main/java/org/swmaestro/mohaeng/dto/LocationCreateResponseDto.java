@@ -2,6 +2,7 @@ package org.swmaestro.mohaeng.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.swmaestro.mohaeng.domain.Location;
 
 @Getter
 public class LocationCreateResponseDto {
@@ -21,5 +22,16 @@ public class LocationCreateResponseDto {
         this.latitude = latitude;
         this.longitude = longitude;
         this.isUsed = isUsed;
+    }
+
+    public static LocationCreateResponseDto of(Location location) {
+    	return LocationCreateResponseDto.builder()
+    			.id(location.getId())
+                .name(location.getName())
+                .address(location.getAddress())
+                .latitude(location.getLatitude())
+                .longitude(location.getLongitude())
+                .isUsed(location.getIsUsed())
+    			.build();
     }
 }

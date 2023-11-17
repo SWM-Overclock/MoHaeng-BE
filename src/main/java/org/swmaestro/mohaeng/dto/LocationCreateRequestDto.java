@@ -27,13 +27,6 @@ public class LocationCreateRequestDto {
     private String longitude;
 
     public Location toEntity(User user) {
-        return Location.builder()
-                .user(user)
-                .name(name)
-                .address(address)
-                .latitude(latitude)
-                .longitude(longitude)
-                .isUsed(true)
-                .build();
+        return Location.of(user, name, address, latitude, longitude);
     }
 }
