@@ -9,7 +9,11 @@ import org.swmaestro.mohaeng.domain.Location;
 import org.swmaestro.mohaeng.domain.user.User;
 import org.swmaestro.mohaeng.dto.LocationCreateRequestDto;
 import org.swmaestro.mohaeng.dto.LocationCreateResponseDto;
+import org.swmaestro.mohaeng.dto.LocationListResponseDto;
 import org.swmaestro.mohaeng.repository.LocationRepository;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -17,6 +21,9 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class LocationServiceTest {
+
+    @Mock
+    private User user;
 
     @Mock
     private LocationRepository locationRepository;
@@ -50,6 +57,31 @@ class LocationServiceTest {
         assertEquals(longitude, responseDto.getLongitude());
 
         verify(locationRepository, times(1)).save(any(Location.class));
+    }
+
+    @Test
+    public void testGetAllLocations() {
+
+        // given
+        String locationName = "Test Name";
+        String address = "Test Address";
+        String latitude = "37.422";
+        String longitude = "-122.084";
+
+        Location location1 = Location.of(user, locationName, address, latitude, longitude, true);
+        Location location2 = Location.of(user, locationName, address, latitude, longitude, true);
+        when(user.getLocations()).thenReturn(Arrays.asList(location1, location2));
+
+        // when
+        List<LocationListResponseDto> result = locationService.getAllLocations(user);
+
+        // then
+        assertEquals(2, result.size());
+        result.forEach(dto -> {
+            assertEquals(locationName, dto.getName());
+            assertEquals(address, dto.getAddress());
+            assertTrue(dto.getIsUsed() != null);
+        });
     }
 
 }
