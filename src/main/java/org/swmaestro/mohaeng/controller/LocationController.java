@@ -5,24 +5,25 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.swmaestro.mohaeng.domain.user.User;
 import org.swmaestro.mohaeng.domain.user.auth.CustomUserDetails;
 import org.swmaestro.mohaeng.dto.LocationCreateRequestDto;
 import org.swmaestro.mohaeng.dto.LocationCreateResponseDto;
+import org.swmaestro.mohaeng.dto.LocationListResponseDto;
 import org.swmaestro.mohaeng.service.LocationService;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.List;
 
 
 @Slf4j
 @RequiredArgsConstructor
-@RestController("/location")
+@RestController
+@RequestMapping("/location")
 public class LocationController {
 
     private final LocationService locationService;
@@ -30,12 +31,11 @@ public class LocationController {
     @PostMapping("/create")
     public ResponseEntity<LocationCreateResponseDto> create(@AuthenticationPrincipal CustomUserDetails userDetails, @Valid @RequestBody LocationCreateRequestDto locationCreateRequestDto) {
 
-        log.info("create a new location: {}", locationCreateRequestDto.getAddress());
-
         User user = userDetails.getUser();
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
         }
+        log.info("create a new location: {}", locationCreateRequestDto.getAddress());
         LocationCreateResponseDto locationCreateResponseDto = locationService.save(user, locationCreateRequestDto);
 
         URI locationUri = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -44,5 +44,18 @@ public class LocationController {
                 .toUri();
 
         return ResponseEntity.created(locationUri).body(locationCreateResponseDto);
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<List<LocationListResponseDto>> getAllLocations(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        User user = userDetails.getUser();
+
+        log.info("user: {}", user);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
+        }
+
+        List<LocationListResponseDto> locations = locationService.getAllLocations(user);
+        return ResponseEntity.ok(locations);
     }
 }
