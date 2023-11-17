@@ -34,6 +34,7 @@ public class LocationService {
                 .address(newLocation.getAddress())
                 .latitude(newLocation.getLatitude())
                 .longitude(newLocation.getLongitude())
+                .isUsed(newLocation.getIsUsed())
                 .build();
     }
 }

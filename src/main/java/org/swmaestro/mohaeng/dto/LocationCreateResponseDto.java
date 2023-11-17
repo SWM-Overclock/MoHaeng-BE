@@ -11,13 +11,15 @@ public class LocationCreateResponseDto {
     private String address;
     private String latitude;
     private String longitude;
+    private boolean isUsed;
 
     @Builder
-    public LocationCreateResponseDto(Long id, String name, String address, String latitude, String longitude) {
+    public LocationCreateResponseDto(Long id, String name, String address, String latitude, String longitude, boolean isUsed) {
         this.id = id;
         this.name = name;
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.isUsed = isUsed;
     }
 }
