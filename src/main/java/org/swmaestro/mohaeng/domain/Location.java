@@ -46,4 +46,8 @@ public class Location extends BaseTimeEntity {
         this.longitude = longitude;
         this.isUsed = isUsed;
     }
+
+    public void setUsed(boolean isUsed) {
+        this.isUsed = isUsed;
+    }
 }
