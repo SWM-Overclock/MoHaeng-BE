@@ -27,6 +27,6 @@ public class LocationCreateRequestDto {
     private String longitude;
 
     public Location toEntity(User user) {
-        return Location.of(user, name, address, latitude, longitude);
+        return Location.of(user, name, address, latitude, longitude, true);
     }
 }
