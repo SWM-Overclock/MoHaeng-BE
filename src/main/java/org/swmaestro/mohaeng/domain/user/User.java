@@ -39,7 +39,7 @@ public class User extends BaseTimeEntity {
     @Column(name = "image_url")
     private String imageUrl;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private List<Location> locations = new ArrayList<>();
 
@@ -53,7 +53,8 @@ public class User extends BaseTimeEntity {
     private Status status;
 
     @Builder
-    public User(String email, String nickName, String provider, String providerId, String imageUrl, Status status, Role role) {
+    public User(Long id, String email, String nickName, String provider, String providerId, String imageUrl, Status status, Role role) {
+        this.id = id;
         this.email = email;
         this.nickName = nickName;
         this.provider = provider;
