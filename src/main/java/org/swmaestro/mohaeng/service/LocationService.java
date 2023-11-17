@@ -21,11 +21,10 @@ public class LocationService {
     @Transactional
     public LocationCreateResponseDto save(User user, LocationCreateRequestDto locationCreateRequestDto) {
 
+        user.getLocations().forEach(location -> location.setUsed(false));
+
         Location newLocation = locationCreateRequestDto.toEntity(user);
         locationRepository.save(newLocation);
-
-        user.getLocations().forEach(location -> location.setUsed(false));
-        newLocation.setUsed(true);
 
         user.addLocation(newLocation);
 

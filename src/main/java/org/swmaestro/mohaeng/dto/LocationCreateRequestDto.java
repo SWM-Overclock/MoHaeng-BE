@@ -33,7 +33,7 @@ public class LocationCreateRequestDto {
                 .address(address)
                 .latitude(latitude)
                 .longitude(longitude)
-                .isUsed(false)
+                .isUsed(true)
                 .build();
     }
 }
