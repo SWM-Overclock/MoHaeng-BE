@@ -34,9 +34,8 @@ class LocationServiceTest {
         String address = "123 Test Street";
         String latitude = "37.422";
         String longitude = "-122.084";
-        boolean isUsed = true;
         User user = User.createUser(email, password, name, name, name);
-        LocationCreateRequestDto locationCreateRequestDto = new LocationCreateRequestDto(name, address, latitude, longitude, isUsed);
+        LocationCreateRequestDto locationCreateRequestDto = new LocationCreateRequestDto(name, address, latitude, longitude);
 
         when(locationRepository.save(any(Location.class))).thenAnswer(i -> i.getArguments()[0]);
 

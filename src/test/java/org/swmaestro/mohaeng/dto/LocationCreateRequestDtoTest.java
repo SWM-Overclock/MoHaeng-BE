@@ -20,12 +20,11 @@ class LocationCreateRequestDtoTest {
         String address = "Test Address";
         String latitude = "37.422";
         String longitude = "-122.084";
-        boolean isUsed = true;
 
         User user = User.createUser(email, nickname, provider, providerId, imageUrl);
 
         // when
-        LocationCreateRequestDto requestDto = new LocationCreateRequestDto(locationName, address, latitude, longitude, isUsed);
+        LocationCreateRequestDto requestDto = new LocationCreateRequestDto(locationName, address, latitude, longitude);
         Location location = requestDto.toEntity(user);
 
         // then
