@@ -12,6 +12,7 @@ import org.swmaestro.mohaeng.domain.user.User;
 import org.swmaestro.mohaeng.domain.user.auth.CustomUserDetails;
 import org.swmaestro.mohaeng.dto.LocationCreateRequestDto;
 import org.swmaestro.mohaeng.dto.LocationCreateResponseDto;
+import org.swmaestro.mohaeng.dto.LocationDetailResponseDto;
 import org.swmaestro.mohaeng.dto.LocationListResponseDto;
 import org.swmaestro.mohaeng.service.LocationService;
 
@@ -52,6 +53,16 @@ public class LocationController {
 
         List<LocationListResponseDto> locations = locationService.getAllLocations(user);
         return ResponseEntity.ok(locations);
+    }
+
+    @GetMapping("/{locationId}")
+    public ResponseEntity<LocationDetailResponseDto> getLocation(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                                 @PathVariable Long locationId) {
+        User user = userDetails.getUser();
+        validateUser(user);
+        log.info("locationId: {}", locationId);
+        LocationDetailResponseDto location = locationService.getLocationById(user, locationId);
+        return ResponseEntity.ok(location);
     }
 
     private static void validateUser(User user) {

@@ -7,13 +7,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import org.swmaestro.mohaeng.dto.LocationDetailResponseDto;
 import org.swmaestro.mohaeng.dto.LocationListResponseDto;
 import org.swmaestro.mohaeng.domain.Location;
 import org.swmaestro.mohaeng.domain.user.User;
 import org.swmaestro.mohaeng.dto.LocationCreateRequestDto;
 import org.swmaestro.mohaeng.dto.LocationCreateResponseDto;
 import org.swmaestro.mohaeng.repository.LocationRepository;
-import org.swmaestro.mohaeng.repository.UserRepository;
 
 import java.util.List;
 
@@ -42,5 +42,19 @@ public class LocationService {
         return user.getLocations().stream()
                 .map(LocationListResponseDto::of)
                 .toList();
+    }
+
+    public LocationDetailResponseDto getLocationById(User user, Long locationId) {
+        Location location = locationRepository.findById(locationId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Location not found"));
+
+        log.info("{} {}", user, location.getUser());
+
+
+        if (!location.getUser().equals(user)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission to access this location");
+        }
+
+        return LocationDetailResponseDto.of(location);
     }
 }
