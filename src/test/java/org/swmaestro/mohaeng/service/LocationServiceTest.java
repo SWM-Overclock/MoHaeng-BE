@@ -5,15 +5,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.server.ResponseStatusException;
 import org.swmaestro.mohaeng.domain.Location;
 import org.swmaestro.mohaeng.domain.user.User;
 import org.swmaestro.mohaeng.dto.LocationCreateRequestDto;
 import org.swmaestro.mohaeng.dto.LocationCreateResponseDto;
+import org.swmaestro.mohaeng.dto.LocationDetailResponseDto;
 import org.swmaestro.mohaeng.dto.LocationListResponseDto;
 import org.swmaestro.mohaeng.repository.LocationRepository;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -30,6 +33,9 @@ class LocationServiceTest {
 
     @InjectMocks
     private LocationService locationService;
+
+    private Location location;
+    private Long locationId = 1L;
 
     @Test
     public void testSaveLocation() {
@@ -84,4 +90,52 @@ class LocationServiceTest {
         });
     }
 
+    @Test
+    public void testGetLocationById_Success() {
+        // given
+        Location location = Location.of(user, "Test Name", "Test Address", "37.422", "-122.084", true);
+        when(locationRepository.findById(locationId)).thenReturn(Optional.of(location));
+
+        // when
+        LocationDetailResponseDto responseDto = locationService.getLocationById(user, locationId);
+
+        // then
+        assertNotNull(responseDto);
+        assertEquals("Test Name", responseDto.getName());
+        assertEquals("Test Address", responseDto.getAddress());
+        // Other assertions...
+    }
+
+    @Test
+    public void testGetLocationById_NotFound() {
+        // given
+        when(locationRepository.findById(locationId)).thenReturn(Optional.empty());
+
+        // when, then
+        assertThrows(ResponseStatusException.class, () -> {
+            locationService.getLocationById(user, locationId);
+        });
+    }
+
+    @Test
+    public void testGetLocationById_Forbidden() {
+        // given
+        String email = "test@mohaeng.org";
+        String nickname = "test";
+        String provider = "test";
+        String providerId = "test";
+        String imageUrl = "test";
+        String name = "test";
+        String address = "123 Test Street";
+        String latitude = "37.422";
+        String longitude = "-122.084";
+        User anotherUser = User.createUser(email, nickname, provider, providerId, imageUrl);
+        Location location = Location.of(user, name, address, latitude, longitude, true);
+        when(locationRepository.findById(locationId)).thenReturn(Optional.of(location));
+
+        // when, then
+        assertThrows(ResponseStatusException.class, () -> {
+            locationService.getLocationById(anotherUser, locationId);
+        });
+    }
 }
