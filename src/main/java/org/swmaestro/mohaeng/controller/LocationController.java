@@ -10,10 +10,10 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.swmaestro.mohaeng.domain.user.User;
 import org.swmaestro.mohaeng.domain.user.auth.CustomUserDetails;
-import org.swmaestro.mohaeng.dto.LocationCreateRequestDto;
-import org.swmaestro.mohaeng.dto.LocationCreateResponseDto;
-import org.swmaestro.mohaeng.dto.LocationDetailResponseDto;
-import org.swmaestro.mohaeng.dto.LocationListResponseDto;
+import org.swmaestro.mohaeng.dto.location.LocationCreateRequestDto;
+import org.swmaestro.mohaeng.dto.location.LocationCreateResponseDto;
+import org.swmaestro.mohaeng.dto.location.LocationDetailResponseDto;
+import org.swmaestro.mohaeng.dto.location.LocationListResponseDto;
 import org.swmaestro.mohaeng.service.LocationService;
 
 import javax.validation.Valid;
@@ -63,6 +63,26 @@ public class LocationController {
         log.info("locationId: {}", locationId);
         LocationDetailResponseDto location = locationService.getLocationById(user, locationId);
         return ResponseEntity.ok(location);
+    }
+
+    @DeleteMapping("/{locationId}")
+    public ResponseEntity<Void> deleteLocation(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                               @PathVariable Long locationId) {
+        User user = userDetails.getUser();
+        validateUser(user);
+        log.info("ID: {}인 위치 삭제 중", locationId);
+        locationService.deleteLocation(user, locationId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/primary/{locationId}")
+    public ResponseEntity<Void> setPrimaryLocation(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                   @PathVariable Long locationId) {
+        User user = userDetails.getUser();
+        validateUser(user);
+        log.info("ID: {}인 위치를 주 위치로 설정 중", locationId);
+        locationService.setPrimaryLocation(user, locationId);
+        return ResponseEntity.ok().build();
     }
 
     private static void validateUser(User user) {
