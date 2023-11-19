@@ -1,4 +1,4 @@
-package org.swmaestro.mohaeng.dto;
+package org.swmaestro.mohaeng.dto.location;
 
 import org.junit.jupiter.api.Test;
 import org.swmaestro.mohaeng.domain.Location;
@@ -19,6 +19,6 @@ public class LocationListResponseDtoTest {
         assertEquals(location.getId(), dto.getId());
         assertEquals(location.getName(), dto.getName());
         assertEquals(location.getAddress(), dto.getAddress());
-        assertEquals(location.getIsUsed(), dto.getIsUsed());
+        assertEquals(location.getIsPrimary(), dto.getIsPrimary());
     }
 }

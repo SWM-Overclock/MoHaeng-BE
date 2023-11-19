@@ -1,4 +1,4 @@
-package org.swmaestro.mohaeng.dto;
+package org.swmaestro.mohaeng.dto.location;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

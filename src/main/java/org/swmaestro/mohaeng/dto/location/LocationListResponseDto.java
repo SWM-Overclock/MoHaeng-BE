@@ -1,4 +1,4 @@
-package org.swmaestro.mohaeng.dto;
+package org.swmaestro.mohaeng.dto.location;
 
 import lombok.Getter;
 import org.swmaestro.mohaeng.domain.Location;
@@ -9,17 +9,17 @@ public class LocationListResponseDto {
     private Long id;
     private String name;
     private String address;
-    private Boolean isUsed;
+    private Boolean isPrimary;
 
-    public LocationListResponseDto(Long id, String name, String address, Boolean isUsed) {
+    public LocationListResponseDto(Long id, String name, String address, Boolean isPrimary) {
         this.id = id;
         this.name = name;
         this.address = address;
-        this.isUsed = isUsed;
+        this.isPrimary = isPrimary;
     }
 
     public static LocationListResponseDto of(Location location) {
-        return new LocationListResponseDto(location.getId(), location.getName(), location.getAddress(), location.getIsUsed());
+        return new LocationListResponseDto(location.getId(), location.getName(), location.getAddress(), location.getIsPrimary());
     }
 
 }

@@ -1,4 +1,4 @@
-package org.swmaestro.mohaeng.dto;
+package org.swmaestro.mohaeng.dto.location;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -12,16 +12,16 @@ public class LocationCreateResponseDto {
     private String address;
     private String latitude;
     private String longitude;
-    private boolean isUsed;
+    private boolean isPrimary;
 
     @Builder
-    public LocationCreateResponseDto(Long id, String name, String address, String latitude, String longitude, boolean isUsed) {
+    public LocationCreateResponseDto(Long id, String name, String address, String latitude, String longitude, boolean isPrimary) {
         this.id = id;
         this.name = name;
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.isUsed = isUsed;
+        this.isPrimary = isPrimary;
     }
 
     public static LocationCreateResponseDto of(Location location) {
@@ -31,7 +31,7 @@ public class LocationCreateResponseDto {
                 .address(location.getAddress())
                 .latitude(location.getLatitude())
                 .longitude(location.getLongitude())
-                .isUsed(location.getIsUsed())
+                .isPrimary(location.getIsPrimary())
     			.build();
     }
 }

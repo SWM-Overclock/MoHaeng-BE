@@ -1,4 +1,4 @@
-package org.swmaestro.mohaeng.dto;
+package org.swmaestro.mohaeng.dto.location;
 
 import org.junit.jupiter.api.Test;
 import org.swmaestro.mohaeng.domain.Location;
@@ -17,14 +17,14 @@ public class LocationDetailResponseDtoTest {
         String expectedAddress = "123 Test St";
         String expectedLatitude = "40.7128";
         String expectedLongitude = "-74.0060";
-        boolean expectedIsUsed = true;
+        boolean expectedIsPrimary = true;
 
         when(mockLocation.getId()).thenReturn(expectedId);
         when(mockLocation.getName()).thenReturn(expectedName);
         when(mockLocation.getAddress()).thenReturn(expectedAddress);
         when(mockLocation.getLatitude()).thenReturn(expectedLatitude);
         when(mockLocation.getLongitude()).thenReturn(expectedLongitude);
-        when(mockLocation.getIsUsed()).thenReturn(expectedIsUsed);
+        when(mockLocation.getIsPrimary()).thenReturn(expectedIsPrimary);
 
         LocationDetailResponseDto dto = LocationDetailResponseDto.of(mockLocation);
 
@@ -33,6 +33,6 @@ public class LocationDetailResponseDtoTest {
         assertEquals(expectedAddress, dto.getAddress());
         assertEquals(expectedLatitude, dto.getLatitude());
         assertEquals(expectedLongitude, dto.getLongitude());
-        assertEquals(expectedIsUsed, dto.isUsed());
+        assertEquals(expectedIsPrimary, dto.isPrimary());
     }
 }

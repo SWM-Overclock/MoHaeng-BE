@@ -1,8 +1,9 @@
-package org.swmaestro.mohaeng.dto;
+package org.swmaestro.mohaeng.dto.location;
 
 import org.junit.jupiter.api.Test;
 import org.swmaestro.mohaeng.domain.Location;
 import org.swmaestro.mohaeng.domain.user.User;
+import org.swmaestro.mohaeng.dto.location.LocationCreateRequestDto;
 
 import static org.junit.jupiter.api.Assertions.*;
 

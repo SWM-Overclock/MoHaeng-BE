@@ -1,7 +1,8 @@
-package org.swmaestro.mohaeng.dto;
+package org.swmaestro.mohaeng.dto.location;
 
 import org.junit.jupiter.api.Test;
 import org.swmaestro.mohaeng.domain.Location;
+import org.swmaestro.mohaeng.dto.location.LocationCreateResponseDto;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,9 +16,9 @@ class LocationCreateResponseDtoTest {
         String address = "Test Address";
         String latitude = "37.422";
         String longitude = "-122.084";
-        boolean isUsed = true;
+        boolean isPrimary = true;
 
-        Location location = Location.of(null, name, address, latitude, longitude, isUsed);
+        Location location = Location.of(null, name, address, latitude, longitude, isPrimary);
 
         // when
         LocationCreateResponseDto responseDto = LocationCreateResponseDto.of(location);
@@ -28,6 +29,6 @@ class LocationCreateResponseDtoTest {
         assertEquals(address, responseDto.getAddress());
         assertEquals(latitude, responseDto.getLatitude());
         assertEquals(longitude, responseDto.getLongitude());
-        assertEquals(isUsed, responseDto.isUsed());
+        assertEquals(isPrimary, responseDto.isPrimary());
     }
 }
