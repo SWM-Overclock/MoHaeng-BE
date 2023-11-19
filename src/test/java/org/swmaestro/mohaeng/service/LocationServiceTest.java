@@ -8,10 +8,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.server.ResponseStatusException;
 import org.swmaestro.mohaeng.domain.Location;
 import org.swmaestro.mohaeng.domain.user.User;
-import org.swmaestro.mohaeng.dto.LocationCreateRequestDto;
-import org.swmaestro.mohaeng.dto.LocationCreateResponseDto;
-import org.swmaestro.mohaeng.dto.LocationDetailResponseDto;
-import org.swmaestro.mohaeng.dto.LocationListResponseDto;
+import org.swmaestro.mohaeng.dto.location.LocationCreateRequestDto;
+import org.swmaestro.mohaeng.dto.location.LocationCreateResponseDto;
+import org.swmaestro.mohaeng.dto.location.LocationDetailResponseDto;
+import org.swmaestro.mohaeng.dto.location.LocationListResponseDto;
 import org.swmaestro.mohaeng.repository.LocationRepository;
 
 import java.util.Arrays;
@@ -86,7 +86,7 @@ class LocationServiceTest {
         result.forEach(dto -> {
             assertEquals(locationName, dto.getName());
             assertEquals(address, dto.getAddress());
-            assertTrue(dto.getIsUsed() != null);
+            assertTrue(dto.getIsPrimary() != null);
         });
     }
 
