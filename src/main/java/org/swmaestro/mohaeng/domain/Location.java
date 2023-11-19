@@ -34,7 +34,7 @@ public class Location extends BaseTimeEntity {
     @Column(name = "longitude", nullable = false)
     private String longitude;
 
-    @Column(name = "is_used", nullable = false)
+    @Column(name = "is_primary", nullable = false)
     private Boolean isPrimary;
 
     @Builder
