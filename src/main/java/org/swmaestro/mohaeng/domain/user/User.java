@@ -87,4 +87,13 @@ public class User extends BaseTimeEntity {
     public void updateProfileImage(String updatedImageUrl) {
         this.imageUrl = updatedImageUrl;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof User) {
+            User user = (User) obj;
+            return this.id.equals(user.getId());
+        }
+        return false;
+    }
 }
