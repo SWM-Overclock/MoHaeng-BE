@@ -27,7 +27,10 @@ public class LocationService {
     @Transactional
     public LocationCreateResponseDto save(User user, LocationCreateRequestDto locationCreateRequestDto) {
 
-        user.getLocations().forEach(location -> location.setPrimary(false));
+        user.getLocations().forEach(location -> {
+            location.setPrimary(false);
+            locationRepository.save(location);
+        });
 
         Location newLocation = locationCreateRequestDto.toEntity(user);
         locationRepository.save(newLocation);
@@ -51,7 +54,6 @@ public class LocationService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Location not found"));
 
         log.info("{} {}", user, location.getUser());
-
 
         if (!location.getUser().equals(user)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission to access this location");
@@ -78,7 +80,10 @@ public class LocationService {
                 .findFirst()
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "위치를 찾을 수 없습니다."));
 
-        locations.forEach(loc -> loc.setPrimary(loc.equals(primaryLocation)));
+        locations.forEach(loc -> {
+            loc.setPrimary(loc.equals(primaryLocation));
+            locationRepository.save(loc);
+        });
     }
 
 }
