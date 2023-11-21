@@ -29,16 +29,16 @@ public class Location extends BaseTimeEntity {
     private String address;
 
     @Column(name = "latitude", nullable = false)
-    private String latitude;
+    private double latitude;
 
     @Column(name = "longitude", nullable = false)
-    private String longitude;
+    private double longitude;
 
     @Column(name = "is_primary", nullable = false)
     private Boolean isPrimary;
 
     @Builder
-    public Location(User user, String name, String address, String latitude, String longitude, Boolean isPrimary) {
+    public Location(User user, String name, String address, double latitude, double longitude, Boolean isPrimary) {
         this.user = user;
         this.name = name;
         this.address = address;
@@ -47,7 +47,7 @@ public class Location extends BaseTimeEntity {
         this.isPrimary = isPrimary;
     }
 
-    public static Location of(User user, String name, String address, String latitude, String longitude, boolean isPrimary) {
+    public static Location of(User user, String name, String address, double latitude, double longitude, boolean isPrimary) {
         return Location.builder()
                 .user(user)
                 .name(name)

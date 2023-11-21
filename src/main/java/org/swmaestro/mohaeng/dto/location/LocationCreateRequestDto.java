@@ -21,10 +21,10 @@ public class LocationCreateRequestDto {
     private String address;
 
     @NotBlank(message = "위도를 입력해주세요.")
-    private String latitude;
+    private double latitude;
 
     @NotBlank(message = "경도를 입력해주세요.")
-    private String longitude;
+    private double longitude;
 
     public Location toEntity(User user) {
         return Location.of(user, name, address, latitude, longitude, true);

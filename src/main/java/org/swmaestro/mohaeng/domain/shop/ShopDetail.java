@@ -29,10 +29,10 @@ public class ShopDetail extends BaseTimeEntity {
     private String address;
 
     @Column(name = "shop_latitude", nullable = false)
-    private String latitude;
+    private double latitude;
 
     @Column(name = "shop_longitude", nullable = false)
-    private String longitude;
+    private double longitude;
 
     @Column(name = "shop_phone", nullable = true)
     private String phone;
