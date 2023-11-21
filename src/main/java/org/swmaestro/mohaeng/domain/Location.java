@@ -65,4 +65,8 @@ public class Location extends BaseTimeEntity {
     public boolean isPrimary() {
         return this.isPrimary = true;
     }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }
