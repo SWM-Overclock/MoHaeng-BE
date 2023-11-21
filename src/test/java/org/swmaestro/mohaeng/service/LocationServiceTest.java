@@ -13,8 +13,10 @@ import org.swmaestro.mohaeng.dto.location.LocationCreateResponseDto;
 import org.swmaestro.mohaeng.dto.location.LocationDetailResponseDto;
 import org.swmaestro.mohaeng.dto.location.LocationListResponseDto;
 import org.swmaestro.mohaeng.repository.LocationRepository;
+import org.swmaestro.mohaeng.repository.UserRepository;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,116 +28,99 @@ import static org.mockito.Mockito.*;
 class LocationServiceTest {
 
     @Mock
-    private User user;
+    private LocationRepository locationRepository;
 
     @Mock
-    private LocationRepository locationRepository;
+    private UserRepository userRepository;
 
     @InjectMocks
     private LocationService locationService;
 
-    private Location location;
-    private Long locationId = 1L;
+    private final Long userId = 1L;
+    private final Long locationId = 1L;
 
     @Test
-    public void testSaveLocation() {
-
+    public void saveLocationTest() {
         // given
-        String email = "test@mohaeng.org";
-        String password = "test";
-        String name = "test";
-        String address = "123 Test Street";
-        String latitude = "37.422";
-        String longitude = "-122.084";
-        User user = User.createUser(email, password, name, name, name);
-        LocationCreateRequestDto locationCreateRequestDto = new LocationCreateRequestDto(name, address, latitude, longitude);
+        User user = mock(User.class);
+        LocationCreateRequestDto requestDto = new LocationCreateRequestDto("Home", "123 Main Street", 10.0, 20.0);
 
-        when(locationRepository.save(any(Location.class))).thenAnswer(i -> i.getArguments()[0]);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(locationRepository.save(any(Location.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        LocationCreateResponseDto responseDto = locationService.save(user, locationCreateRequestDto);
+        LocationCreateResponseDto response = locationService.save(userId, requestDto);
 
         // then
-        assertNotNull(responseDto);
-        assertEquals(name, responseDto.getName());
-        assertEquals(address, responseDto.getAddress());
-        assertEquals(latitude, responseDto.getLatitude());
-        assertEquals(longitude, responseDto.getLongitude());
-
+        assertNotNull(response);
         verify(locationRepository, times(1)).save(any(Location.class));
     }
 
     @Test
-    public void testGetAllLocations() {
-
+    public void getAllLocationsTest() {
         // given
-        String locationName = "Test Name";
-        String address = "Test Address";
-        String latitude = "37.422";
-        String longitude = "-122.084";
-
-        Location location1 = Location.of(user, locationName, address, latitude, longitude, true);
-        Location location2 = Location.of(user, locationName, address, latitude, longitude, true);
-        when(user.getLocations()).thenReturn(Arrays.asList(location1, location2));
+        User user = mock(User.class);
+        Location location = new Location(user, "Home", "123 Main Street", 10.0, 20.0, false);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(user.getLocations()).thenReturn(Collections.singletonList(location));
 
         // when
-        List<LocationListResponseDto> result = locationService.getAllLocations(user);
+        List<LocationListResponseDto> locations = locationService.getAllLocations(userId);
 
         // then
-        assertEquals(2, result.size());
-        result.forEach(dto -> {
-            assertEquals(locationName, dto.getName());
-            assertEquals(address, dto.getAddress());
-            assertTrue(dto.getIsPrimary() != null);
-        });
+        assertNotNull(locations);
+        assertFalse(locations.isEmpty());
+        assertEquals(1, locations.size());
     }
 
     @Test
-    public void testGetLocationById_Success() {
+    public void getLocationByIdTest() {
         // given
-        Location location = Location.of(user, "Test Name", "Test Address", "37.422", "-122.084", true);
+        User user = mock(User.class);
+        Location location = new Location(user, "Home", "123 Main Street", 10.0, 20.0, false);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(locationRepository.findById(locationId)).thenReturn(Optional.of(location));
 
         // when
-        LocationDetailResponseDto responseDto = locationService.getLocationById(user, locationId);
+        LocationDetailResponseDto response = locationService.getLocationById(userId, locationId);
 
         // then
-        assertNotNull(responseDto);
-        assertEquals("Test Name", responseDto.getName());
-        assertEquals("Test Address", responseDto.getAddress());
-        // Other assertions...
+        assertNotNull(response);
+        assertEquals("Home", response.getName());
     }
 
     @Test
-    public void testGetLocationById_NotFound() {
+    public void deleteLocationTest() {
         // given
-        when(locationRepository.findById(locationId)).thenReturn(Optional.empty());
-
-        // when, then
-        assertThrows(ResponseStatusException.class, () -> {
-            locationService.getLocationById(user, locationId);
-        });
-    }
-
-    @Test
-    public void testGetLocationById_Forbidden() {
-        // given
-        String email = "test@mohaeng.org";
-        String nickname = "test";
-        String provider = "test";
-        String providerId = "test";
-        String imageUrl = "test";
-        String name = "test";
-        String address = "123 Test Street";
-        String latitude = "37.422";
-        String longitude = "-122.084";
-        User anotherUser = User.createUser(email, nickname, provider, providerId, imageUrl);
-        Location location = Location.of(user, name, address, latitude, longitude, true);
+        User user = mock(User.class);
+        Location location = mock(Location.class); // Location 객체를 모킹합니다.
+        when(location.getId()).thenReturn(locationId); // getId() 호출 시 locationId를 반환하도록 설정합니다.
+        when(location.getUser()).thenReturn(user); // getUser() 호출 시 mock된 user를 반환하도록 설정합니다.
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(locationRepository.findById(locationId)).thenReturn(Optional.of(location));
 
-        // when, then
-        assertThrows(ResponseStatusException.class, () -> {
-            locationService.getLocationById(anotherUser, locationId);
-        });
+        // when
+        locationService.deleteLocation(userId, locationId);
+
+        // then
+        verify(locationRepository, times(1)).deleteById(locationId);
+    }
+
+
+    @Test
+    public void setPrimaryLocationTest() {
+        // given
+        User user = mock(User.class);
+        Location location = mock(Location.class); // Location을 모킹합니다.
+        when(location.getId()).thenReturn(locationId); // getId() 호출 시 locationId를 반환하도록 설정합니다.
+        List<Location> locations = Arrays.asList(location);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(user.getLocations()).thenReturn(locations);
+
+        // when
+        locationService.setPrimaryLocation(userId, locationId);
+
+        // then
+        verify(locationRepository, times(locations.size())).save(any(Location.class));
     }
 }

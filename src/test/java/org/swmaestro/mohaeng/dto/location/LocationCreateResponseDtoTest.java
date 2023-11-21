@@ -14,8 +14,8 @@ class LocationCreateResponseDtoTest {
         Long id = 1L;
         String name = "Test Name";
         String address = "Test Address";
-        String latitude = "37.422";
-        String longitude = "-122.084";
+        double latitude = 37.422;
+        double longitude = -122.084;
         boolean isPrimary = true;
 
         Location location = Location.of(null, name, address, latitude, longitude, isPrimary);

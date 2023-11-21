@@ -28,7 +28,7 @@ class LocationRepositoryTest {
                 "test"
         );
 
-        Location location = Location.of(user, "test", "123 Test Street", "37.422", "-122.084", true);
+        Location location = Location.of(user, "test", "123 Test Street", 37.422, -122.084, true);
 
         // when
         locationRepository.save(location);
