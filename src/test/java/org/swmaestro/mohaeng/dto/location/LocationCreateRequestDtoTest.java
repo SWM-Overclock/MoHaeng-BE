@@ -19,8 +19,8 @@ class LocationCreateRequestDtoTest {
         String imageUrl = "testImageUrl";
         String locationName = "Test Name";
         String address = "Test Address";
-        String latitude = "37.422";
-        String longitude = "-122.084";
+        double latitude = 37.422;
+        double longitude = -122.084;
 
         User user = User.createUser(email, nickname, provider, providerId, imageUrl);
 

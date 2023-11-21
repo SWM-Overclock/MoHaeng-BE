@@ -10,7 +10,7 @@ public class LocationListResponseDtoTest {
     @Test
     public void testOfMethod() {
         // given
-        Location location = Location.of(null, "Test Name", "Test Address", "37.422", "-122.084", true);
+        Location location = Location.of(null, "Test Name", "Test Address", 37.422, -122.084, true);
 
         // when
         LocationListResponseDto dto = LocationListResponseDto.of(location);

@@ -32,10 +32,11 @@ public class LocationController {
     @PostMapping("/create")
     public ResponseEntity<LocationCreateResponseDto> create(@AuthenticationPrincipal CustomUserDetails userDetails, @Valid @RequestBody LocationCreateRequestDto locationCreateRequestDto) {
 
-        User user = userDetails.getUser();
-        validateUser(user);
+        Long userId = userDetails.getUserId();
+        log.info("userId: {}", userId);
+        validateUser(userId);
         log.info("create a new location: {}", locationCreateRequestDto.getAddress());
-        LocationCreateResponseDto locationCreateResponseDto = locationService.save(user, locationCreateRequestDto);
+        LocationCreateResponseDto locationCreateResponseDto = locationService.save(userId, locationCreateRequestDto);
 
         URI locationUri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
@@ -47,46 +48,48 @@ public class LocationController {
 
     @GetMapping("/list")
     public ResponseEntity<List<LocationListResponseDto>> getAllLocations(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        User user = userDetails.getUser();
-        log.info("user: {}", user);
-        validateUser(user);
+        Long userId = userDetails.getUserId();
+        log.info("userId: {}", userId);
+        validateUser(userId);
 
-        List<LocationListResponseDto> locations = locationService.getAllLocations(user);
+        List<LocationListResponseDto> locations = locationService.getAllLocations(userId);
         return ResponseEntity.ok(locations);
     }
 
     @GetMapping("/{locationId}")
     public ResponseEntity<LocationDetailResponseDto> getLocation(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                                  @PathVariable Long locationId) {
-        User user = userDetails.getUser();
-        validateUser(user);
+        Long userId = userDetails.getUserId();
+        log.info("userId: {}", userId);
+        validateUser(userId);
+
         log.info("locationId: {}", locationId);
-        LocationDetailResponseDto location = locationService.getLocationById(user, locationId);
+        LocationDetailResponseDto location = locationService.getLocationById(userId, locationId);
         return ResponseEntity.ok(location);
     }
 
     @DeleteMapping("/{locationId}")
     public ResponseEntity<Void> deleteLocation(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                @PathVariable Long locationId) {
-        User user = userDetails.getUser();
-        validateUser(user);
+        Long userId = userDetails.getUserId();
+        validateUser(userId);
         log.info("ID: {}인 위치 삭제 중", locationId);
-        locationService.deleteLocation(user, locationId);
+        locationService.deleteLocation(userId, locationId);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/primary/{locationId}")
     public ResponseEntity<Void> setPrimaryLocation(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                    @PathVariable Long locationId) {
-        User user = userDetails.getUser();
-        validateUser(user);
+        Long userId = userDetails.getUserId();
+        validateUser(userId);
         log.info("ID: {}인 위치를 주 위치로 설정 중", locationId);
-        locationService.setPrimaryLocation(user, locationId);
+        locationService.setPrimaryLocation(userId, locationId);
         return ResponseEntity.ok().build();
     }
 
-    private static void validateUser(User user) {
-        if (user == null) {
+    private static void validateUser(Long userId) {
+        if (userId == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
         }
     }

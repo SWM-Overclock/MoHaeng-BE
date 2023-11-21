@@ -96,4 +96,16 @@ public class User extends BaseTimeEntity {
         }
         return false;
     }
+
+    public Location getPrimaryLocation() {
+        return locations.stream()
+                .filter(Location::isPrimary)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("주 위치가 없습니다."));
+    }
+
+    public void removeLocation(Location location) {
+        this.locations.remove(location);
+        location.setUser(null);
+    }
 }
