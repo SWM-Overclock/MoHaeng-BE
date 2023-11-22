@@ -19,10 +19,10 @@ public class ShopDetailResponseDto {
     private final double longitude;
     private final String imageUrl;
     private final Long eventCount;
-    private final Set<EventType> eventDetails;
+    private final Set<EventType> eventTypes;
 
     @Builder
-    public ShopDetailResponseDto(Long id, String name, ShopType shopType, String brandCode, double latitude, double longitude, String imageUrl, Long eventCount, Set<EventType> eventDetails) {
+    public ShopDetailResponseDto(Long id, String name, ShopType shopType, String brandCode, double latitude, double longitude, String imageUrl, Long eventCount, Set<EventType> eventTypes) {
         this.id = id;
         this.name = name;
         this.shopType = shopType;
@@ -31,10 +31,10 @@ public class ShopDetailResponseDto {
         this.longitude = longitude;
         this.imageUrl = imageUrl;
         this.eventCount = eventCount;
-        this.eventDetails = eventDetails;
+        this.eventTypes = eventTypes;
     }
 
-    public static ShopDetailResponseDto of(ShopDetail shopDetail, Long eventCount, Set<EventType> eventDetails) {
+    public static ShopDetailResponseDto of(ShopDetail shopDetail, Long eventCount, Set<EventType> eventTypes) {
         return ShopDetailResponseDto.builder()
                 .id(shopDetail.getId())
                 .name(shopDetail.getName())
@@ -44,7 +44,7 @@ public class ShopDetailResponseDto {
                 .longitude(shopDetail.getLongitude())
                 .imageUrl(shopDetail.getImageUrl())
                 .eventCount(eventCount)
-                .eventDetails(eventDetails)
+                .eventTypes(eventTypes)
                 .build();
     }
 }
