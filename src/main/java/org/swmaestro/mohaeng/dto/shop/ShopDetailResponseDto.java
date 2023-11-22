@@ -2,11 +2,14 @@ package org.swmaestro.mohaeng.dto.shop;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.swmaestro.mohaeng.domain.event.EventType;
 import org.swmaestro.mohaeng.domain.shop.ShopDetail;
 import org.swmaestro.mohaeng.domain.shop.ShopType;
 
+import java.util.Set;
+
 @Getter
-public class ShopDetailListRequestDto {
+public class ShopDetailResponseDto {
 
     private final Long id;
     private final String name;
@@ -14,25 +17,34 @@ public class ShopDetailListRequestDto {
     private final String brandCode;
     private final double latitude;
     private final double longitude;
+    private final String imageUrl;
+    private final Long eventCount;
+    private final Set<EventType> eventDetails;
 
     @Builder
-    public ShopDetailListRequestDto(Long id, String name, ShopType shopType, String brandCode, double latitude, double longitude) {
+    public ShopDetailResponseDto(Long id, String name, ShopType shopType, String brandCode, double latitude, double longitude, String imageUrl, Long eventCount, Set<EventType> eventDetails) {
         this.id = id;
         this.name = name;
         this.shopType = shopType;
         this.brandCode = brandCode;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.imageUrl = imageUrl;
+        this.eventCount = eventCount;
+        this.eventDetails = eventDetails;
     }
 
-    public static ShopDetailListRequestDto of(ShopDetail shopDetail) {
-        return ShopDetailListRequestDto.builder()
+    public static ShopDetailResponseDto of(ShopDetail shopDetail, Long eventCount, Set<EventType> eventDetails) {
+        return ShopDetailResponseDto.builder()
                 .id(shopDetail.getId())
                 .name(shopDetail.getName())
                 .shopType(shopDetail.getShop().getShopType())
                 .brandCode(shopDetail.getShop().getBrandCode())
                 .latitude(shopDetail.getLatitude())
                 .longitude(shopDetail.getLongitude())
+                .imageUrl(shopDetail.getImageUrl())
+                .eventCount(eventCount)
+                .eventDetails(eventDetails)
                 .build();
     }
 }
