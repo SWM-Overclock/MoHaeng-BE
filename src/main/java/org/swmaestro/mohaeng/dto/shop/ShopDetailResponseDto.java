@@ -7,6 +7,7 @@ import org.swmaestro.mohaeng.domain.shop.ShopDetail;
 import org.swmaestro.mohaeng.domain.shop.ShopType;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Getter
 public class ShopDetailResponseDto {
@@ -19,7 +20,7 @@ public class ShopDetailResponseDto {
     private final double longitude;
     private final String imageUrl;
     private final Long eventCount;
-    private final Set<EventType> eventTypes;
+    private final Set<String> eventTypes;
 
     @Builder
     public ShopDetailResponseDto(Long id, String name, ShopType shopType, String brandCode, double latitude, double longitude, String imageUrl, Long eventCount, Set<EventType> eventTypes) {
@@ -31,7 +32,9 @@ public class ShopDetailResponseDto {
         this.longitude = longitude;
         this.imageUrl = imageUrl;
         this.eventCount = eventCount;
-        this.eventTypes = eventTypes;
+        this.eventTypes = eventTypes.stream()
+                .map(EventType::getValue)
+                .collect(Collectors.toSet());
     }
 
     public static ShopDetailResponseDto of(ShopDetail shopDetail, Long eventCount, Set<EventType> eventTypes) {

@@ -1,5 +1,8 @@
 package org.swmaestro.mohaeng.domain.event;
 
+import lombok.Getter;
+
+@Getter
 public enum EventType {
     ONE_PLUS_ONE("1+1"),
     TWO_PLUS_ONE("2+1"),
@@ -12,9 +15,5 @@ public enum EventType {
 
     private EventType(String value) {
         this.value = value;
-    }
-
-    public String getValue() {
-        return value;
     }
 }
