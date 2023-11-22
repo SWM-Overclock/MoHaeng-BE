@@ -54,7 +54,7 @@ public class ShopDetailService {
         ShopDetail shopDetail = shopDetailRepository.findById(shopDetailId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 가게가 없습니다."));
         Long eventCount = eventRepository.countByShopDetail(shopDetailId);
-        Set<EventType> eventDetails = eventRepository.findDistinctEventDetailsByShopDetailId(shopDetailId);
-        return ShopDetailResponseDto.of(shopDetail, eventCount, eventDetails);
+        Set<EventType> eventTypes = eventRepository.findDistinctEventDetailsByShopDetailId(shopDetailId);
+        return ShopDetailResponseDto.of(shopDetail, eventCount, eventTypes);
     }
 }
