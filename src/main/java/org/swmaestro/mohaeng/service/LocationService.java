@@ -14,6 +14,7 @@ import org.swmaestro.mohaeng.domain.user.User;
 import org.swmaestro.mohaeng.dto.location.LocationCreateRequestDto;
 import org.swmaestro.mohaeng.dto.location.LocationCreateResponseDto;
 import org.swmaestro.mohaeng.repository.LocationRepository;
+import org.swmaestro.mohaeng.repository.UserRepository;
 
 import java.util.List;
 
@@ -23,9 +24,12 @@ import java.util.List;
 public class LocationService {
 
     private final LocationRepository locationRepository;
+    private final UserRepository userRepository;
 
     @Transactional
-    public LocationCreateResponseDto save(User user, LocationCreateRequestDto locationCreateRequestDto) {
+    public LocationCreateResponseDto save(Long userId, LocationCreateRequestDto locationCreateRequestDto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
         user.getLocations().forEach(location -> {
             location.setPrimary(false);
@@ -41,7 +45,9 @@ public class LocationService {
     }
 
     @Transactional(readOnly = true)
-    public List<LocationListResponseDto> getAllLocations(User user) {
+    public List<LocationListResponseDto> getAllLocations(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
         return user.getLocations().stream()
                 .map(LocationListResponseDto::of)
                 .toList();
@@ -49,11 +55,13 @@ public class LocationService {
 
 
     @Transactional(readOnly = true)
-    public LocationDetailResponseDto getLocationById(User user, Long locationId) {
+    public LocationDetailResponseDto getLocationById(Long userId, Long locationId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
         Location location = locationRepository.findById(locationId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Location not found"));
 
-        log.info("{} {}", user, location.getUser());
 
         if (!location.getUser().equals(user)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission to access this location");
@@ -63,17 +71,26 @@ public class LocationService {
     }
 
     @Transactional
-    public void deleteLocation(User user, Long locationId) {
+    public void deleteLocation(Long userId, Long locationId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."));
+
         Location location = locationRepository.findById(locationId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "위치를 찾을 수 없습니다."));
+
         if (!location.getUser().equals(user)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "이 위치를 삭제할 권한이 없습니다.");
         }
-        locationRepository.delete(location);
+        locationRepository.deleteById(location.getId());
+        user.removeLocation(location);
+        userRepository.save(user);
     }
 
     @Transactional
-    public void setPrimaryLocation(User user, Long locationId) {
+    public void setPrimaryLocation(Long userId, Long locationId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."));
+
         List<Location> locations = user.getLocations();
         Location primaryLocation = locations.stream()
                 .filter(location -> location.getId().equals(locationId))
@@ -84,6 +101,7 @@ public class LocationService {
             loc.setPrimary(loc.equals(primaryLocation));
             locationRepository.save(loc);
         });
+        userRepository.save(user);
     }
 
 }

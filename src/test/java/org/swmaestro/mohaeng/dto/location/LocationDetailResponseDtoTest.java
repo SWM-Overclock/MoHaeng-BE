@@ -15,8 +15,8 @@ public class LocationDetailResponseDtoTest {
         Long expectedId = 1L;
         String expectedName = "Test Location";
         String expectedAddress = "123 Test St";
-        String expectedLatitude = "40.7128";
-        String expectedLongitude = "-74.0060";
+        double expectedLatitude = 40.7128;
+        double expectedLongitude = -74.0060;
         boolean expectedIsPrimary = true;
 
         when(mockLocation.getId()).thenReturn(expectedId);
