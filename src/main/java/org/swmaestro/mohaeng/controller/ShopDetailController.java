@@ -5,9 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.swmaestro.mohaeng.domain.user.auth.CustomUserDetails;
+import org.swmaestro.mohaeng.dto.shop.ShopDetailResponseDto;
 import org.swmaestro.mohaeng.dto.shop.ShopDetailListRequestDto;
 import org.swmaestro.mohaeng.service.ShopDetailService;
 
@@ -28,5 +30,11 @@ public class ShopDetailController {
         List<ShopDetailListRequestDto> shopDetails = shopDetailService.getShopDetailsNearBy(userId);
         log.info("Number of shops found: {}", shopDetails.size());
         return ResponseEntity.ok(shopDetails);
+    }
+
+    @GetMapping("/{shopDetailId}")
+    public ResponseEntity<ShopDetailResponseDto> getShopDetail(@PathVariable Long shopDetailId) {
+        ShopDetailResponseDto shopDetailResponseDto = shopDetailService.getShopDetail(shopDetailId);
+        return ResponseEntity.ok(shopDetailResponseDto);
     }
 }
