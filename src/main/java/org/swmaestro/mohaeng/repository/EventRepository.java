@@ -1,5 +1,7 @@
 package org.swmaestro.mohaeng.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,4 +21,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query("SELECT DISTINCT e.eventType FROM Event e WHERE e.shop.id = (SELECT sd.shop.id FROM ShopDetail sd WHERE sd.id = :shopDetailId)")
     Set<EventType> findDistinctEventDetailsByShopDetailId(@Param("shopDetailId") Long shopDetailId);
+
+    @Query("SELECT e FROM Event e WHERE e.shop.id = (SELECT sd.shop.id FROM ShopDetail sd WHERE sd.id = :shopDetailId)")
+    Page<Event> findByShopDetailIdWithPagination(@Param("shopDetailId") Long shopDetailId, Pageable pageable);
 }
