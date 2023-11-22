@@ -12,7 +12,8 @@ public interface ShopDetailRepository extends JpaRepository<ShopDetail, Long> {
     @Query(value = "SELECT * FROM shop_detail " +
             "WHERE ST_DISTANCE_SPHERE(" +
             "point(shop_longitude, shop_latitude), " +
-            "point(:longitude, :latitude)) <= :radius",
+            "point(:longitude, :latitude)) <= :radius" +
+            "AND status = 'ACTIVE'",
             nativeQuery = true)
     List<ShopDetail> findShopsWithinRadius(@Param("longitude") double longitude, @Param("latitude") double latitude, @Param("radius") double radius);
 }
