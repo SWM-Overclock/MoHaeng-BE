@@ -33,7 +33,7 @@ public class Event extends BaseTimeEntity {
     private String categoryCode;
 
     @Enumerated(EnumType.STRING)
-    private EventDetails eventDetails;
+    private EventType eventType;
 
     @Column(name = "event_regular_price", nullable = false)
     private int regularPrice;
@@ -71,10 +71,10 @@ public class Event extends BaseTimeEntity {
     private Status status;
 
     @Builder
-    public Event(Shop shop, String categoryCode, EventDetails eventDetails, int regularPrice, int discountPrice, String name, String description, String imageUrl, String startDate, String endDate, String startTime, String endTime, CreatedBy createdBy, Status status) {
+    public Event(Shop shop, String categoryCode, EventType eventType, int regularPrice, int discountPrice, String name, String description, String imageUrl, String startDate, String endDate, String startTime, String endTime, CreatedBy createdBy, Status status) {
         this.shop = shop;
         this.categoryCode = categoryCode;
-        this.eventDetails = eventDetails;
+        this.eventType = eventType;
         this.regularPrice = regularPrice;
         this.discountPrice = discountPrice;
         this.name = name;
