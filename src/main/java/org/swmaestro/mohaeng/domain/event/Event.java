@@ -32,7 +32,7 @@ public class Event extends BaseTimeEntity {
     @Column(name = "category_code", nullable = false, length = 45)
     private String categoryCode;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = EventTypeConverter.class)
     private EventType eventType;
 
     @Column(name = "event_regular_price", nullable = false)
