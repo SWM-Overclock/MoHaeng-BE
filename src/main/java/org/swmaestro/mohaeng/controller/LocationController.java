@@ -10,10 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.swmaestro.mohaeng.domain.user.User;
 import org.swmaestro.mohaeng.domain.user.auth.CustomUserDetails;
-import org.swmaestro.mohaeng.dto.location.LocationCreateRequestDto;
-import org.swmaestro.mohaeng.dto.location.LocationCreateResponseDto;
-import org.swmaestro.mohaeng.dto.location.LocationDetailResponseDto;
-import org.swmaestro.mohaeng.dto.location.LocationListResponseDto;
+import org.swmaestro.mohaeng.dto.location.*;
 import org.swmaestro.mohaeng.service.LocationService;
 
 import javax.validation.Valid;
@@ -86,6 +83,20 @@ public class LocationController {
         log.info("ID: {}인 위치를 주 위치로 설정 중", locationId);
         locationService.setPrimaryLocation(userId, locationId);
         return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{locationId}")
+    public ResponseEntity<LocationDetailResponseDto> updateLocation(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                                    @PathVariable Long locationId,
+                                                                    @Valid @RequestBody LocationUpdateRequestDto locationUpdateRequestDto) {
+        Long userId = userDetails.getUserId();
+        log.info("userId: {}", userId);
+        validateUser(userId);
+
+        log.info("Updating locationId: {}", locationId);
+        LocationDetailResponseDto updatedLocation = locationService.updateLocation(userId, locationId, locationUpdateRequestDto);
+
+        return ResponseEntity.ok(updatedLocation);
     }
 
     private static void validateUser(Long userId) {

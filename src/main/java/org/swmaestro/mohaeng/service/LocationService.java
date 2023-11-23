@@ -7,12 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-import org.swmaestro.mohaeng.dto.location.LocationDetailResponseDto;
-import org.swmaestro.mohaeng.dto.location.LocationListResponseDto;
+import org.swmaestro.mohaeng.dto.location.*;
 import org.swmaestro.mohaeng.domain.Location;
 import org.swmaestro.mohaeng.domain.user.User;
-import org.swmaestro.mohaeng.dto.location.LocationCreateRequestDto;
-import org.swmaestro.mohaeng.dto.location.LocationCreateResponseDto;
 import org.swmaestro.mohaeng.repository.LocationRepository;
 import org.swmaestro.mohaeng.repository.UserRepository;
 
@@ -104,4 +101,21 @@ public class LocationService {
         userRepository.save(user);
     }
 
+    @Transactional
+    public LocationDetailResponseDto updateLocation(Long userId, Long locationId, LocationUpdateRequestDto locationUpdateRequestDto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."));
+
+        Location location = locationRepository.findById(locationId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "위치를 찾을 수 없습니다."));
+
+        if (!location.getUser().equals(user)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "이 위치를 수정할 권한이 없습니다.");
+        }
+
+        location.update(locationUpdateRequestDto);
+
+        Location updatedLocation = locationRepository.save(location);
+        return LocationDetailResponseDto.of(updatedLocation);
+    }
 }
