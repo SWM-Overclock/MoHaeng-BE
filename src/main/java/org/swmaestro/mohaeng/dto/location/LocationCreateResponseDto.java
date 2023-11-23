@@ -10,12 +10,12 @@ public class LocationCreateResponseDto {
     private Long id;
     private String name;
     private String address;
-    private double latitude;
-    private double longitude;
-    private boolean isPrimary;
+    private Double latitude;
+    private Double longitude;
+    private Boolean isPrimary;
 
     @Builder
-    public LocationCreateResponseDto(Long id, String name, String address, double latitude, double longitude, boolean isPrimary) {
+    public LocationCreateResponseDto(Long id, String name, String address, Double latitude, Double longitude, Boolean isPrimary) {
         this.id = id;
         this.name = name;
         this.address = address;

@@ -23,10 +23,12 @@ public class LocationCreateRequestDto {
     @NotBlank(message = "주소를 입력해주세요.")
     private String address;
 
+    @NotNull(message = "위도를 입력해주세요.")
     @DecimalMin(value = "33.0", message = "위도는 최소 33.0 이상이어야 합니다.")
     @DecimalMax(value = "38.0", message = "위도는 최대 38.0 이하여야 합니다.")
     private double latitude;
 
+    @NotNull(message = "경도를 입력해주세요.")
     @DecimalMin(value = "124.0", message = "경도는 최소 124.0 이상이어야 합니다.")
     @DecimalMax(value = "132.0", message = "경도는 최대 132.0 이하여야 합니다.")
     private double longitude;

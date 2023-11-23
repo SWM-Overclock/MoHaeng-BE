@@ -11,8 +11,8 @@ public class LocationDetailResponseDto {
     private Long id;
     private String name;
     private String address;
-    private double latitude;
-    private double longitude;
+    private Double latitude;
+    private Double longitude;
     private boolean isPrimary;
 
     public static LocationDetailResponseDto of(Location location) {
