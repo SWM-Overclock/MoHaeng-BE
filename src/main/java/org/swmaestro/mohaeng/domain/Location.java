@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.swmaestro.mohaeng.domain.user.User;
+import org.swmaestro.mohaeng.dto.location.LocationUpdateRequestDto;
 
 import javax.persistence.*;
 
@@ -29,16 +30,16 @@ public class Location extends BaseTimeEntity {
     private String address;
 
     @Column(name = "latitude", nullable = false)
-    private double latitude;
+    private Double latitude;
 
     @Column(name = "longitude", nullable = false)
-    private double longitude;
+    private Double longitude;
 
     @Column(name = "is_primary", nullable = false)
     private Boolean isPrimary;
 
     @Builder
-    public Location(User user, String name, String address, double latitude, double longitude, Boolean isPrimary) {
+    public Location(User user, String name, String address, Double latitude, Double longitude, Boolean isPrimary) {
         this.user = user;
         this.name = name;
         this.address = address;
@@ -47,7 +48,7 @@ public class Location extends BaseTimeEntity {
         this.isPrimary = isPrimary;
     }
 
-    public static Location of(User user, String name, String address, double latitude, double longitude, boolean isPrimary) {
+    public static Location of(User user, String name, String address, Double latitude, Double longitude, Boolean isPrimary) {
         return Location.builder()
                 .user(user)
                 .name(name)
@@ -68,5 +69,20 @@ public class Location extends BaseTimeEntity {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public void update(LocationUpdateRequestDto updateRequestDto) {
+        if (updateRequestDto.getName() != null) {
+            this.name = updateRequestDto.getName();
+        }
+        if (updateRequestDto.getAddress() != null) {
+            this.address = updateRequestDto.getAddress();
+        }
+        if (updateRequestDto.getLatitude() != null) {
+            this.latitude = updateRequestDto.getLatitude();
+        }
+        if (updateRequestDto.getLongitude() != null) {
+            this.longitude = updateRequestDto.getLongitude();
+        }
     }
 }
