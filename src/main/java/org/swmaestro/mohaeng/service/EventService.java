@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.swmaestro.mohaeng.domain.Location;
 import org.swmaestro.mohaeng.domain.shop.Shop;
 import org.swmaestro.mohaeng.dto.EventListResponseDto;
+import org.swmaestro.mohaeng.dto.EventResponseDto;
 import org.swmaestro.mohaeng.repository.EventRepository;
 import org.swmaestro.mohaeng.repository.ShopRepository;
 
@@ -42,5 +43,12 @@ public class EventService {
 
         return eventRepository.findByShopsWithPagination(shops, pageable)
                 .map(event -> EventListResponseDto.of(event));
+    }
+
+    @Transactional(readOnly = true)
+    public EventResponseDto getEventById(Long eventId) {
+        return eventRepository.findById(eventId)
+                .map(event -> EventResponseDto.of(event))
+                .orElseThrow(() -> new IllegalArgumentException("해당 이벤트가 없습니다."));
     }
 }
