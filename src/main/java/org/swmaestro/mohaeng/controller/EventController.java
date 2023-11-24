@@ -30,7 +30,7 @@ public class EventController {
         return ResponseEntity.ok(events);
     }
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<Page<EventListResponseDto>> getAllEvents(@AuthenticationPrincipal CustomUserDetails userDetails, Pageable pageable) {
         User user = userDetails.getUser();
         Location userLocation = user.getPrimaryLocation();

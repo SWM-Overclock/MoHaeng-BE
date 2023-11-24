@@ -10,7 +10,6 @@ import org.swmaestro.mohaeng.domain.event.EventType;
 import org.swmaestro.mohaeng.domain.shop.Shop;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
