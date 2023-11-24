@@ -32,6 +32,7 @@ public class ShopDetailService {
     @Transactional(readOnly = true)
     public List<ShopDetailListRequestDto> getShopDetailsNearBy(Long userId) {
         Location userLocation = getUserPrimaryLocation(userId);
+        log.info("userLocation: {}", userLocation.getAddress());
         List<ShopDetail> shopDetails = shopDetailRepository.findShopDetailsWithinRadius(
                 userLocation.getLongitude(),
                 userLocation.getLatitude(),
