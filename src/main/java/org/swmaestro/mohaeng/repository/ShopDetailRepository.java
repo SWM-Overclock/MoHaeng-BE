@@ -15,5 +15,5 @@ public interface ShopDetailRepository extends JpaRepository<ShopDetail, Long> {
             "point(:longitude, :latitude)) <= :radius " +
             "AND status = 'ACTIVE'",
             nativeQuery = true)
-    List<ShopDetail> findShopsWithinRadius(@Param("longitude") double longitude, @Param("latitude") double latitude, @Param("radius") double radius);
+    List<ShopDetail> findShopDetailsWithinRadius(@Param("longitude") double longitude, @Param("latitude") double latitude, @Param("radius") double radius);
 }

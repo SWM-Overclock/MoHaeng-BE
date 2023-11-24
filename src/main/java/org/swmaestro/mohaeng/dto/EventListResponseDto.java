@@ -8,7 +8,7 @@ import org.swmaestro.mohaeng.domain.event.EventType;
 
 
 @Getter
-public class EventsByShopDetailResponseDto {
+public class EventListResponseDto {
 
     private Long id;
     private String name;
@@ -19,7 +19,7 @@ public class EventsByShopDetailResponseDto {
     private String imageUrl;
 
     @Builder
-    public EventsByShopDetailResponseDto(Long id, String name, String categoryCode, EventType eventType, int regularPrice, int discountPrice, String imageUrl) {
+    public EventListResponseDto(Long id, String name, String categoryCode, EventType eventType, int regularPrice, int discountPrice, String imageUrl) {
         this.id = id;
         this.name = name;
         this.categoryCode = categoryCode;
@@ -29,8 +29,8 @@ public class EventsByShopDetailResponseDto {
         this.imageUrl = imageUrl;
     }
 
-    public static EventsByShopDetailResponseDto of(Event event) {
-        return EventsByShopDetailResponseDto.builder()
+    public static EventListResponseDto of(Event event) {
+        return EventListResponseDto.builder()
                 .id(event.getId())
                 .name(event.getName())
                 .categoryCode(event.getCategoryCode())
