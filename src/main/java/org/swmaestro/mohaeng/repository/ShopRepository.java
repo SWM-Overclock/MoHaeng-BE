@@ -9,11 +9,11 @@ import java.util.List;
 
 public interface ShopRepository extends JpaRepository<Shop, Long> {
 
-    @Query(value = "SELECT DISTINCT sd.shop FROM shop_detail sd " +
+    @Query(value = "SELECT DISTINCT s.* FROM shop s " +
+            "INNER JOIN shop_detail sd ON s.shop_id = sd.shop_id " +
             "WHERE ST_DISTANCE_SPHERE(" +
             "point(sd.shop_longitude, sd.shop_latitude), " +
             "point(:longitude, :latitude)) <= :radius " +
-            "AND sd.status = 'ACTIVE'",
-            nativeQuery = true)
+            "AND sd.status = 'ACTIVE'", nativeQuery = true)
     List<Shop> findDistinctShopsWithinRadius(@Param("longitude") double longitude, @Param("latitude") double latitude, @Param("radius") double radius);
 }
