@@ -14,7 +14,6 @@ import org.swmaestro.mohaeng.domain.Location;
 import org.swmaestro.mohaeng.domain.user.User;
 import org.swmaestro.mohaeng.domain.user.auth.CustomUserDetails;
 import org.swmaestro.mohaeng.dto.EventListResponseDto;
-import org.swmaestro.mohaeng.dto.EventResponseDto;
 import org.swmaestro.mohaeng.service.EventService;
 
 @Slf4j
@@ -39,11 +38,5 @@ public class EventController {
 
         Page<EventListResponseDto> events = eventService.getAllEvents(userLocation, pageable);
         return ResponseEntity.ok(events);
-    }
-
-    @GetMapping("/{eventId}")
-    public ResponseEntity<EventResponseDto> getEventById(@PathVariable Long eventId) {
-        EventResponseDto event = eventService.getEventById(eventId);
-        return ResponseEntity.ok(event);
     }
 }
