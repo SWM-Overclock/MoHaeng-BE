@@ -69,14 +69,10 @@ jobs:
       - name: Copy Docker files
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.DEV_WAS01_IP }}, ${{ secrets.DEV_WAS02_IP }}
+          host: ${{ secrets.DEV_WAS_IP }}
           username: ${{ secrets.DEV_WAS_USERNAME }}
           key: ${{ secrets.DEV_SSH_KEY }}
           port: ${{ secrets.DEV_SSH_PORT }}
-          proxy_host: ${{ secrets.DEV_BASTION_IP }}
-          proxy_username: ${{ secrets.DEV_BASTION_USERNAME }}
-          proxy_key: ${{ secrets.DEV_SSH_KEY }}
-          proxy_port: ${{ secrets.DEV_BASTION_PORT }}
           source: 'docker-compose.yml'
           target: 'compose'
           rm: true
@@ -99,14 +95,10 @@ jobs:
           JWT_REFRESH_TOKEN_EXPIRE_LENGTH: ${{ secrets.JWT_REFRESH_TOKEN_EXPIRE_LENGTH }}
           DEV_REDIS_HOST: ${{ secrets.DEV_REDIS_HOST }}
         with:
-          host: ${{ secrets.DEV_WAS01_IP }}, ${{ secrets.DEV_WAS02_IP }}
+          host: ${{ secrets.DEV_WAS_IP }}
           username: ${{ secrets.DEV_WAS_USERNAME }}
           key: ${{ secrets.DEV_SSH_KEY }}
           port: ${{ secrets.DEV_SSH_PORT }}
-          proxy_host: ${{ secrets.DEV_BASTION_IP }}
-          proxy_username: ${{ secrets.DEV_BASTION_USERNAME }}
-          proxy_key: ${{ secrets.DEV_SSH_KEY }}
-          proxy_port: ${{ secrets.DEV_BASTION_PORT }}
           envs: SPRING_DATABASE_SCHEMA,SPRING_DATABASE_USERNAME,SPRING_DATABASE_PASSWORD,SPRING_DATABASE_HOST,IMAGE_TAG,DOCKERHUB_USERNAME,DOCKERHUB_REPOSITORY_NAME, KAKAO_CLIENT_ID,KAKAO_CLIENT_SECRET,KAKAO_REDIRECT_URI,JWT_SECRET_KEY,JWT_ACCESS_TOKEN_EXPIRE_LENGTH,JWT_REFRESH_TOKEN_EXPIRE_LENGTH,DEV_REDIS_HOST
           script: |
             cd compose
