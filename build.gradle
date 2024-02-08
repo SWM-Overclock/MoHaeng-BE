@@ -21,6 +21,10 @@ repositories {
 	mavenCentral()
 }
 
+ext.isAppleSilicon = {
+	return System.getProperty('os.name').toLowerCase().contains('mac')
+}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -36,6 +40,11 @@ dependencies {
 
 	//redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	//netty
+	if (isAppleSilicon()) {
+		implementation 'io.netty:netty-resolver-dns-native-macos:4.1.69.Final:osx-aarch_64'
+	}
 
 	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'com.mysql:mysql-connector-j'
