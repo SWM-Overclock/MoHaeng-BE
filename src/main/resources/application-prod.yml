@@ -8,9 +8,15 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    properties:
-      hibernate:
-        format_sql: true
+      format_sql: true
+      show-sql: true
+    open-in-view: false
+
   redis:
     host: ${REDIS_HOST}
     port: 6379
+
+  data:
+    redis:
+      repositories:
+        enabled: false
