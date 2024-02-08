@@ -11,6 +11,7 @@ import org.springframework.data.redis.core.ValueOperations;
 
 import java.util.concurrent.TimeUnit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -59,7 +60,7 @@ class RedisServiceTest {
         String userEmail = "test@mohaeng.org";
         String refreshToken = "refreshToken";
 
-        when(valueOperations.get(userEmail)).thenReturn(refreshToken);
+        when(redisTemplate.opsForValue().get(refreshToken)).thenReturn(userEmail);
 
         assertTrue(redisService.validateToken(userEmail, refreshToken));
     }
@@ -69,7 +70,6 @@ class RedisServiceTest {
         String userEmail = "test@mohaeng.org";
         String storedToken = "storedToken";
         String wrongToken = "wrongToken";
-
         when(valueOperations.get(userEmail)).thenReturn(storedToken);
 
         assertFalse(redisService.validateToken(userEmail, wrongToken));

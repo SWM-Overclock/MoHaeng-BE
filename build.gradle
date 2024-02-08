@@ -21,6 +21,10 @@ repositories {
 	mavenCentral()
 }
 
+ext.isAppleSilicon = {
+	return System.getProperty('os.name').toLowerCase().contains('mac')
+}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -33,15 +37,18 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.2'
+
+	//redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-	//view
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	//netty
+	if (isAppleSilicon()) {
+		implementation 'io.netty:netty-resolver-dns-native-macos:4.1.69.Final:osx-aarch_64'
+	}
 
-	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'com.mysql:mysql-connector-j'
+	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

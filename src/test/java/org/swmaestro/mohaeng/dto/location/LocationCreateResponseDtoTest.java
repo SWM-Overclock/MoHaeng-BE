@@ -29,6 +29,6 @@ class LocationCreateResponseDtoTest {
         assertEquals(address, responseDto.getAddress());
         assertEquals(latitude, responseDto.getLatitude());
         assertEquals(longitude, responseDto.getLongitude());
-        assertEquals(isPrimary, responseDto.isPrimary());
+        assertEquals(isPrimary, responseDto.getIsPrimary());
     }
 }

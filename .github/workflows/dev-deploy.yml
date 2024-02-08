@@ -6,17 +6,20 @@ on:
       - develop
 
 jobs:
-  build:
+  build-and-docker-operations:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: 17
           distribution: 'temurin'
+
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v2
 
       - name: Gradle Caching
         uses: actions/cache@v3
@@ -28,15 +31,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Set up Docker
-        uses: docker/setup-buildx-action@v2
-
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
         shell: bash
 
-      - name: Build with Gradle
-        run: ./gradlew clean build -x test
+      - name: Build with Gradle and Run Tests
+        run: ./gradlew clean build
 
       - name: Build image
         run: docker build --build-arg ACTIVE_PROFILE=${{ secrets.DEV_ACTIVE_PROFILE }} . -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DEV_DOCKERHUB_REPOSITORY_NAME }}:${{ secrets.IMAGE_TAG }}
@@ -46,6 +46,13 @@ jobs:
 
       - name: Push image
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DEV_DOCKERHUB_REPOSITORY_NAME }}:${{ secrets.IMAGE_TAG }}
+
+  deploy-to-aws:
+    needs: build-and-docker-operations
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
 
       - name: Get Github action IP
         id: ip
@@ -69,14 +76,10 @@ jobs:
       - name: Copy Docker files
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.DEV_WAS01_IP }}, ${{ secrets.DEV_WAS02_IP }}
+          host: ${{ secrets.DEV_WAS_IP }}
           username: ${{ secrets.DEV_WAS_USERNAME }}
           key: ${{ secrets.DEV_SSH_KEY }}
           port: ${{ secrets.DEV_SSH_PORT }}
-          proxy_host: ${{ secrets.DEV_BASTION_IP }}
-          proxy_username: ${{ secrets.DEV_BASTION_USERNAME }}
-          proxy_key: ${{ secrets.DEV_SSH_KEY }}
-          proxy_port: ${{ secrets.DEV_BASTION_PORT }}
           source: 'docker-compose.yml'
           target: 'compose'
           rm: true
@@ -99,14 +102,10 @@ jobs:
           JWT_REFRESH_TOKEN_EXPIRE_LENGTH: ${{ secrets.JWT_REFRESH_TOKEN_EXPIRE_LENGTH }}
           DEV_REDIS_HOST: ${{ secrets.DEV_REDIS_HOST }}
         with:
-          host: ${{ secrets.DEV_WAS01_IP }}, ${{ secrets.DEV_WAS02_IP }}
+          host: ${{ secrets.DEV_WAS_IP }}
           username: ${{ secrets.DEV_WAS_USERNAME }}
           key: ${{ secrets.DEV_SSH_KEY }}
           port: ${{ secrets.DEV_SSH_PORT }}
-          proxy_host: ${{ secrets.DEV_BASTION_IP }}
-          proxy_username: ${{ secrets.DEV_BASTION_USERNAME }}
-          proxy_key: ${{ secrets.DEV_SSH_KEY }}
-          proxy_port: ${{ secrets.DEV_BASTION_PORT }}
           envs: SPRING_DATABASE_SCHEMA,SPRING_DATABASE_USERNAME,SPRING_DATABASE_PASSWORD,SPRING_DATABASE_HOST,IMAGE_TAG,DOCKERHUB_USERNAME,DOCKERHUB_REPOSITORY_NAME, KAKAO_CLIENT_ID,KAKAO_CLIENT_SECRET,KAKAO_REDIRECT_URI,JWT_SECRET_KEY,JWT_ACCESS_TOKEN_EXPIRE_LENGTH,JWT_REFRESH_TOKEN_EXPIRE_LENGTH,DEV_REDIS_HOST
           script: |
             cd compose
