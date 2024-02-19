@@ -16,7 +16,7 @@ import org.swmaestro.mohaeng.exception.auth.CustomAccessDeniedHandler;
 public class SecurityConfig {
 
     private static final String[] AUTH_WHITELIST = {
-            "/login/**", "/auth/token-reissue", "/h2-console/**"
+            "/login/**", "/auth/refresh", "/h2-console/**"
     };
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
