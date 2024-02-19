@@ -5,9 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.swmaestro.mohaeng.component.jwt.JwtTokenProvider;
 import org.swmaestro.mohaeng.domain.user.auth.CustomUserDetails;
@@ -22,7 +20,7 @@ import java.io.IOException;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class JwtTokenFilter extends OncePerRequestFilter {
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final String HEADER_AUTHORIZATION = "Authorization";
     private static final String PREFIX_TOKEN = "Bearer ";
@@ -36,11 +34,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String token = extractToken(request);
-        log.info("token: {}", token);
-        if (token != null && jwtTokenProvider.validateToken(token)) {
+        if (jwtTokenProvider.validateToken(token)) {
             Authentication auth = getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(auth);
-            log.info("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", auth.getName(), request.getRequestURI());
         }
         filterChain.doFilter(request, response);
     }
@@ -55,7 +51,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     private Authentication getAuthentication(String token) {
         String username = jwtTokenProvider.getPayload(token);
-        // UserDetails 로드
         CustomUserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
