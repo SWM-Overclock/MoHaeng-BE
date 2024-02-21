@@ -7,7 +7,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.swmaestro.mohaeng.component.jwt.JwtTokenProvider;
+import org.swmaestro.mohaeng.util.jwt.JwtUtil;
 import org.swmaestro.mohaeng.domain.user.auth.CustomUserDetails;
 import org.swmaestro.mohaeng.service.auth.CustomUserDetailsService;
 
@@ -26,7 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String PREFIX_TOKEN = "Bearer ";
 
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtUtil jwtUtil;
     private final CustomUserDetailsService customUserDetailsService;
 
     @Override
@@ -34,7 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String token = extractToken(request);
-        if (jwtTokenProvider.validateToken(token)) {
+        if (jwtUtil.validateToken(token)) {
             Authentication auth = getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
@@ -50,7 +50,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private Authentication getAuthentication(String token) {
-        String username = jwtTokenProvider.getPayload(token);
+        String username = jwtUtil.getPayload(token);
         CustomUserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }

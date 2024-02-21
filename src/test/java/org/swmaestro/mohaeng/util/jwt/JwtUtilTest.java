@@ -1,4 +1,4 @@
-package org.swmaestro.mohaeng.component.jwt;
+package org.swmaestro.mohaeng.util.jwt;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +10,7 @@ import org.swmaestro.mohaeng.util.exception.InvalidRefreshTokenException;
 import org.swmaestro.mohaeng.util.exception.NotExpiredTokenException;
 import org.swmaestro.mohaeng.util.exception.RefreshTokenMismatchException;
 import org.swmaestro.mohaeng.service.auth.AuthTokenService;
+import org.swmaestro.mohaeng.util.jwt.JwtUtil;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,14 +18,14 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class JwtTokenProviderTest {
+public class JwtUtilTest {
 
     private static final long accessTokenValidity = 1000 * 60 * 60;
     private static final long refreshTokenValidity = 1000 * 60 * 60 * 24 * 7;
     private static final String secretKey = "X3qXTkZpNjJnKzZNVFd3eHpFUnRIZWdrbGtjZ0ZuZ2pQUXpRbGVtQUFBQUJ3PT0=";
 
     @InjectMocks
-    private JwtTokenProvider jwtTokenProvider;
+    private JwtUtil jwtUtil;
 
     @Mock
     private AuthTokenService redisService;
@@ -32,9 +33,9 @@ public class JwtTokenProviderTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        ReflectionTestUtils.setField(jwtTokenProvider, "accessTokenValidityInMilliseconds", accessTokenValidity);
-        ReflectionTestUtils.setField(jwtTokenProvider, "refreshTokenValidityInMilliseconds", refreshTokenValidity);
-        ReflectionTestUtils.setField(jwtTokenProvider, "secretKey", secretKey);
+        ReflectionTestUtils.setField(jwtUtil, "accessTokenValidityInMilliseconds", accessTokenValidity);
+        ReflectionTestUtils.setField(jwtUtil, "refreshTokenValidityInMilliseconds", refreshTokenValidity);
+        ReflectionTestUtils.setField(jwtUtil, "secretKey", secretKey);
     }
 
     @Test
@@ -43,11 +44,11 @@ public class JwtTokenProviderTest {
         String userEmail = "test@mohaeng.org";
 
         // when
-        String token = jwtTokenProvider.createAccessToken(userEmail);
+        String token = jwtUtil.createAccessToken(userEmail);
 
         // then
         assertThat(token).isNotNull();
-        assertThat(jwtTokenProvider.getPayload(token)).isEqualTo(userEmail);
+        assertThat(jwtUtil.getPayload(token)).isEqualTo(userEmail);
     }
 
     @Test
@@ -56,7 +57,7 @@ public class JwtTokenProviderTest {
         String userEmail = "test@mohaeng.org";
 
         // when
-        String refreshToken = jwtTokenProvider.createRefreshToken(userEmail);
+        String refreshToken = jwtUtil.createRefreshToken(userEmail);
 
         // then
         assertThat(refreshToken).isNotNull();
@@ -67,66 +68,66 @@ public class JwtTokenProviderTest {
     public void 유효한_토큰의_검증_확인() {
         // given
         String userEmail = "test@mohaeng.org";
-        String validToken = jwtTokenProvider.createAccessToken(userEmail);
+        String validToken = jwtUtil.createAccessToken(userEmail);
 
         // when
-        boolean isValid = jwtTokenProvider.validateToken(validToken);
+        boolean isValid = jwtUtil.validateToken(validToken);
 
         // then
         assertThat(isValid).isTrue();
-        assertThat(jwtTokenProvider.getPayload(validToken)).isEqualTo(userEmail);
+        assertThat(jwtUtil.getPayload(validToken)).isEqualTo(userEmail);
     }
 
     @Test
     public void 만료되지_않은_토큰_재발급_시_예외_발생_확인() {
         // given
         String userEmail = "test@mohaeng.org";
-        String accessToken = jwtTokenProvider.createAccessToken(userEmail);
-        String refreshToken = jwtTokenProvider.createRefreshToken(userEmail);
+        String accessToken = jwtUtil.createAccessToken(userEmail);
+        String refreshToken = jwtUtil.createRefreshToken(userEmail);
 
         // when & then
         assertThrows(NotExpiredTokenException.class, () -> {
-            jwtTokenProvider.reissueAccessToken(accessToken, refreshToken);
+            jwtUtil.reissueAccessToken(accessToken, refreshToken);
         });
     }
 
     @Test
     public void 만료된_토큰으로_새_액세스토큰_재발급_확인() {
         // given
-        ReflectionTestUtils.setField(jwtTokenProvider, "accessTokenValidityInMilliseconds", -accessTokenValidity);
+        ReflectionTestUtils.setField(jwtUtil, "accessTokenValidityInMilliseconds", -accessTokenValidity);
         String userEmail = "test@example.com";
-        String expiredAccessToken = jwtTokenProvider.createAccessToken(userEmail);
-        String validRefreshToken = jwtTokenProvider.createRefreshToken(userEmail);
+        String expiredAccessToken = jwtUtil.createAccessToken(userEmail);
+        String validRefreshToken = jwtUtil.createRefreshToken(userEmail);
 
         when(redisService.getData(anyString())).thenReturn(validRefreshToken);
 
-        ReflectionTestUtils.setField(jwtTokenProvider, "accessTokenValidityInMilliseconds", accessTokenValidity);
+        ReflectionTestUtils.setField(jwtUtil, "accessTokenValidityInMilliseconds", accessTokenValidity);
 
         // when
-        String newAccessToken = jwtTokenProvider.reissueAccessToken(expiredAccessToken, validRefreshToken);
+        String newAccessToken = jwtUtil.reissueAccessToken(expiredAccessToken, validRefreshToken);
 
         // then
         assertNotNull(newAccessToken);
-        assertThat(jwtTokenProvider.getPayload(newAccessToken)).isEqualTo(userEmail);
+        assertThat(jwtUtil.getPayload(newAccessToken)).isEqualTo(userEmail);
     }
 
     @Test
     public void 리프레쉬_토큰_불일치_시_예외_발생_확인() {
         // given
-        ReflectionTestUtils.setField(jwtTokenProvider, "accessTokenValidityInMilliseconds", -accessTokenValidity);
+        ReflectionTestUtils.setField(jwtUtil, "accessTokenValidityInMilliseconds", -accessTokenValidity);
         String userEmail = "test@example.com";
         String invalidEmail = "invalid@example.com";
-        String expiredAccessToken = jwtTokenProvider.createAccessToken(userEmail);
-        String validRefreshToken = jwtTokenProvider.createRefreshToken(userEmail);
-        String invalidRefreshToken = jwtTokenProvider.createRefreshToken(invalidEmail);
+        String expiredAccessToken = jwtUtil.createAccessToken(userEmail);
+        String validRefreshToken = jwtUtil.createRefreshToken(userEmail);
+        String invalidRefreshToken = jwtUtil.createRefreshToken(invalidEmail);
 
         when(redisService.getData(anyString())).thenReturn(validRefreshToken);
 
-        ReflectionTestUtils.setField(jwtTokenProvider, "accessTokenValidityInMilliseconds", accessTokenValidity);
+        ReflectionTestUtils.setField(jwtUtil, "accessTokenValidityInMilliseconds", accessTokenValidity);
 
         // when & then
         assertThrows(RefreshTokenMismatchException.class, () -> {
-            jwtTokenProvider.reissueAccessToken(expiredAccessToken, invalidRefreshToken);
+            jwtUtil.reissueAccessToken(expiredAccessToken, invalidRefreshToken);
         });
 
     }
@@ -134,19 +135,19 @@ public class JwtTokenProviderTest {
     @Test
     public void 리프레쉬_토큰_유효하지_않을_때_예외_발생() {
         // given
-        ReflectionTestUtils.setField(jwtTokenProvider, "accessTokenValidityInMilliseconds", -accessTokenValidity);
+        ReflectionTestUtils.setField(jwtUtil, "accessTokenValidityInMilliseconds", -accessTokenValidity);
         String userEmail = "test@example.com";
-        String expiredAccessToken = jwtTokenProvider.createAccessToken(userEmail);
-        String validRefreshToken = jwtTokenProvider.createRefreshToken(userEmail);
+        String expiredAccessToken = jwtUtil.createAccessToken(userEmail);
+        String validRefreshToken = jwtUtil.createRefreshToken(userEmail);
         String invalidRefreshToken = "invalid_refresh_token";
 
         when(redisService.getData(anyString())).thenReturn(validRefreshToken);
 
-        ReflectionTestUtils.setField(jwtTokenProvider, "accessTokenValidityInMilliseconds", accessTokenValidity);
+        ReflectionTestUtils.setField(jwtUtil, "accessTokenValidityInMilliseconds", accessTokenValidity);
 
         // when & then
         assertThrows(InvalidRefreshTokenException.class, () -> {
-            jwtTokenProvider.reissueAccessToken(expiredAccessToken, invalidRefreshToken);
+            jwtUtil.reissueAccessToken(expiredAccessToken, invalidRefreshToken);
         });
     }
 }

@@ -1,4 +1,4 @@
-package org.swmaestro.mohaeng.component.jwt;
+package org.swmaestro.mohaeng.util.jwt;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ import java.util.Random;
 @Component
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class JwtTokenProvider {
+public class JwtUtil {
 
     private final AuthTokenService authTokenService;
 
