@@ -1,4 +1,4 @@
-package org.swmaestro.mohaeng.exception.auth;
+package org.swmaestro.mohaeng.util.exception.auth;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;

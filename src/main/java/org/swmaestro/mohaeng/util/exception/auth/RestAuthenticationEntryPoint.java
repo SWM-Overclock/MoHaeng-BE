@@ -1,4 +1,4 @@
-package org.swmaestro.mohaeng.exception.auth;
+package org.swmaestro.mohaeng.util.exception.auth;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;
@@ -23,7 +23,7 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        log.info("Authentication failure - Error: {}, Method: {}, URI: {}",
+        log.info("Authentication failure, Error: {}, Method: {}, URI: {}",
                 authException.getMessage(),
                 request.getMethod(),
                 request.getRequestURI());
