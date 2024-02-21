@@ -99,17 +99,17 @@ public class JwtTokenProvider {
     public String reissueAccessToken(String accessToken, String refreshToken) {
         Claims claims = getExpiredTokenClaims(accessToken);
         if (claims == null) {
-            throw new NotExpiredTokenException();
+            throw new NotExpiredTokenException("Token is not expired yet.");
         }
 
         String userEmail = claims.getSubject();
         if (!validateToken(refreshToken)) {
-            throw new InvalidRefreshTokenException();
+            throw new InvalidRefreshTokenException("Invalid refresh token.");
         }
 
         String storedRefreshToken = redisService.getData(userEmail);
         if (!refreshToken.equals(storedRefreshToken)) {
-            throw new RefreshTokenMismatchException();
+            throw new RefreshTokenMismatchException("Refresh token mismatch.");
         }
         return createAccessToken(userEmail);
     }
