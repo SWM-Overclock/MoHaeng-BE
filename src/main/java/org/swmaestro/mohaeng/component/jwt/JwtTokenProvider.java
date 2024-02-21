@@ -3,13 +3,13 @@ package org.swmaestro.mohaeng.component.jwt;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.*;
 import org.springframework.transaction.annotation.Transactional;
-import org.swmaestro.mohaeng.domain.user.auth.CustomUserDetails;
+import org.swmaestro.mohaeng.util.exception.InvalidRefreshTokenException;
+import org.swmaestro.mohaeng.util.exception.NotExpiredTokenException;
+import org.swmaestro.mohaeng.util.exception.RefreshTokenMismatchException;
 import org.swmaestro.mohaeng.service.RedisService;
-import org.swmaestro.mohaeng.service.auth.CustomUserDetailsService;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -42,7 +42,7 @@ public class JwtTokenProvider {
         String generatedString = new String(array, StandardCharsets.UTF_8);
         String refreshToken = createToken(generatedString, refreshTokenValidityInMilliseconds);
 
-        redisService.setDataWithExpiration(refreshToken, userEmail, refreshTokenValidityInMilliseconds);
+        redisService.setDataWithExpiration(userEmail, refreshToken, refreshTokenValidityInMilliseconds);
         return refreshToken;
     }
 
@@ -59,18 +59,29 @@ public class JwtTokenProvider {
     }
 
     public String getPayload(String token){
+        Claims claims = getTokenClaims(token);
+        return claims.getSubject();
+    }
+
+    public Claims getTokenClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    public Claims getExpiredTokenClaims(String token) {
         try {
-            return Jwts.parserBuilder()
+            Jwts.parserBuilder()
                     .setSigningKey(secretKey)
                     .build()
                     .parseClaimsJws(token)
-                    .getBody()
-                    .getSubject();
+                    .getBody();
         } catch (ExpiredJwtException e) {
-            return e.getClaims().getSubject();
-        } catch (JwtException e){
-            throw new RuntimeException("유효하지 않은 토큰 입니다");
+            return e.getClaims();
         }
+        return null;
     }
 
     public boolean validateToken(String token) {
@@ -85,15 +96,20 @@ public class JwtTokenProvider {
         }
     }
 
-    public String reissueAccessToken(String refreshToken) {
-        if (!validateToken(refreshToken)) {
-            throw new RuntimeException("유효하지 않은 리프레쉬 토큰 입니다");
+    public String reissueAccessToken(String accessToken, String refreshToken) {
+        Claims claims = getExpiredTokenClaims(accessToken);
+        if (claims == null) {
+            throw new NotExpiredTokenException();
         }
 
-        String userEmail = redisService.getData(refreshToken);
-        log.info("userEmail: {}", userEmail);
-        if (!redisService.validateToken(userEmail, refreshToken)) {
-            throw new RuntimeException("유효하지 않은 리프레쉬 토큰 입니다");
+        String userEmail = claims.getSubject();
+        if (!validateToken(refreshToken)) {
+            throw new InvalidRefreshTokenException();
+        }
+
+        String storedRefreshToken = redisService.getData(userEmail);
+        if (!refreshToken.equals(storedRefreshToken)) {
+            throw new RefreshTokenMismatchException();
         }
         return createAccessToken(userEmail);
     }

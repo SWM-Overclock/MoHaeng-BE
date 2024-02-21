@@ -8,8 +8,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.swmaestro.mohaeng.config.filter.JwtAuthenticationFilter;
-import org.swmaestro.mohaeng.exception.auth.RestAuthenticationEntryPoint;
-import org.swmaestro.mohaeng.exception.auth.CustomAccessDeniedHandler;
+import org.swmaestro.mohaeng.util.exception.auth.RestAuthenticationEntryPoint;
+import org.swmaestro.mohaeng.util.exception.auth.CustomAccessDeniedHandler;
 
 @Configuration
 @RequiredArgsConstructor
