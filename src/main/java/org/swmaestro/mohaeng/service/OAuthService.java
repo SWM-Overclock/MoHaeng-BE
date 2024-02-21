@@ -13,7 +13,7 @@ import org.swmaestro.mohaeng.domain.user.KakaoUserInfo;
 import org.swmaestro.mohaeng.domain.user.OAuth2UserInfo;
 import org.swmaestro.mohaeng.domain.user.User;
 import org.swmaestro.mohaeng.dto.LoginResponse;
-import org.swmaestro.mohaeng.exception.ClientRegistrationNotFoundException;
+import org.swmaestro.mohaeng.util.exception.ClientRegistrationNotFoundException;
 import org.swmaestro.mohaeng.repository.UserRepository;
 
 import java.util.Map;
