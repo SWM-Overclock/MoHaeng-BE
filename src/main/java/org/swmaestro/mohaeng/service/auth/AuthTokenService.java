@@ -1,19 +1,16 @@
-package org.swmaestro.mohaeng.service;
+package org.swmaestro.mohaeng.service.auth;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class RedisService {
+public class AuthTokenService {
 
     private final RedisTemplate redisTemplate;
 
@@ -23,10 +20,5 @@ public class RedisService {
 
     public String getData(String key) {
         return (String) redisTemplate.opsForValue().get(key);
-    }
-
-    public boolean validateToken(String userEmail, String refreshToken) {
-        String storedEmail = getData(refreshToken);
-        return userEmail.equals(storedEmail);
     }
 }

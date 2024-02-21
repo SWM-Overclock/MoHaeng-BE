@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.swmaestro.mohaeng.util.exception.InvalidRefreshTokenException;
 import org.swmaestro.mohaeng.util.exception.NotExpiredTokenException;
 import org.swmaestro.mohaeng.util.exception.RefreshTokenMismatchException;
-import org.swmaestro.mohaeng.service.RedisService;
+import org.swmaestro.mohaeng.service.auth.AuthTokenService;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -21,7 +21,7 @@ import java.util.Random;
 @Transactional(readOnly = true)
 public class JwtTokenProvider {
 
-    private final RedisService redisService;
+    private final AuthTokenService authTokenService;
 
     @Value("${jwt.access-token.expire-length}")
     private long accessTokenValidityInMilliseconds;
@@ -42,7 +42,7 @@ public class JwtTokenProvider {
         String generatedString = new String(array, StandardCharsets.UTF_8);
         String refreshToken = createToken(generatedString, refreshTokenValidityInMilliseconds);
 
-        redisService.setDataWithExpiration(userEmail, refreshToken, refreshTokenValidityInMilliseconds);
+        authTokenService.setDataWithExpiration(userEmail, refreshToken, refreshTokenValidityInMilliseconds);
         return refreshToken;
     }
 
@@ -107,7 +107,7 @@ public class JwtTokenProvider {
             throw new InvalidRefreshTokenException("Invalid refresh token.");
         }
 
-        String storedRefreshToken = redisService.getData(userEmail);
+        String storedRefreshToken = authTokenService.getData(userEmail);
         if (!refreshToken.equals(storedRefreshToken)) {
             throw new RefreshTokenMismatchException("Refresh token mismatch.");
         }

@@ -9,7 +9,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.swmaestro.mohaeng.util.exception.InvalidRefreshTokenException;
 import org.swmaestro.mohaeng.util.exception.NotExpiredTokenException;
 import org.swmaestro.mohaeng.util.exception.RefreshTokenMismatchException;
-import org.swmaestro.mohaeng.service.RedisService;
+import org.swmaestro.mohaeng.service.auth.AuthTokenService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,7 +27,7 @@ public class JwtTokenProviderTest {
     private JwtTokenProvider jwtTokenProvider;
 
     @Mock
-    private RedisService redisService;
+    private AuthTokenService redisService;
 
     @BeforeEach
     public void setUp() {
