@@ -1,4 +1,4 @@
-package org.swmaestro.mohaeng.exception;
+package org.swmaestro.mohaeng.util.exception;
 
 public class ClientRegistrationNotFoundException extends RuntimeException {
     public ClientRegistrationNotFoundException(String message) {

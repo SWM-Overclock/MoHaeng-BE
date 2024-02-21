@@ -4,9 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.swmaestro.mohaeng.component.jwt.JwtTokenProvider;
-import org.swmaestro.mohaeng.dto.TokenRequest;
-import org.swmaestro.mohaeng.dto.TokenResponse;
+import org.swmaestro.mohaeng.dto.auth.TokenRefreshRequestDto;
+import org.swmaestro.mohaeng.service.auth.AuthService;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -14,12 +15,22 @@ import org.swmaestro.mohaeng.dto.TokenResponse;
 @RestController
 public class AuthController {
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private static final String HEADER_AUTHORIZATION = "Authorization";
+    private static final int PREFIX_TOKEN_LENGTH = 7;
 
-    @PostMapping("/token-reissue")
-    public ResponseEntity<?> reissueToken(@RequestBody TokenRequest tokenRequest) {
-        log.info("refreshToken: {}", tokenRequest.getRefreshToken());
-        String newAccessToken = jwtTokenProvider.reissueAccessToken(tokenRequest.getRefreshToken());
-        return ResponseEntity.ok(new TokenResponse(newAccessToken));
+    private final AuthService authService;
+
+    /**
+     * Access Token Refresh
+     * Access Token 만료 시 Refresh Token 통해 refresh
+     * @param  request HttpServletRequest
+     * @param  tokenRefreshRequestDto TokenRefreshRequestDto
+     * @return ResponseEntity with TokenRefreshResponseDto
+     */
+    @PostMapping("/refresh")
+    public ResponseEntity<?> reissueToken(HttpServletRequest request,
+                                          @RequestBody TokenRefreshRequestDto tokenRefreshRequestDto) {
+        String accessToken = request.getHeader(HEADER_AUTHORIZATION).substring(PREFIX_TOKEN_LENGTH);
+        return ResponseEntity.ok().body(authService.reissueToken(accessToken, tokenRefreshRequestDto.getRefreshToken()));
     }
 }

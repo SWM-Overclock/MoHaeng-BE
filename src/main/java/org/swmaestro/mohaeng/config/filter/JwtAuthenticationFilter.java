@@ -5,11 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.swmaestro.mohaeng.component.jwt.JwtTokenProvider;
+import org.swmaestro.mohaeng.util.jwt.JwtUtil;
 import org.swmaestro.mohaeng.domain.user.auth.CustomUserDetails;
 import org.swmaestro.mohaeng.service.auth.CustomUserDetailsService;
 
@@ -22,13 +20,13 @@ import java.io.IOException;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class JwtTokenFilter extends OncePerRequestFilter {
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final String HEADER_AUTHORIZATION = "Authorization";
     private static final String PREFIX_TOKEN = "Bearer ";
 
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtUtil jwtUtil;
     private final CustomUserDetailsService customUserDetailsService;
 
     @Override
@@ -36,11 +34,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String token = extractToken(request);
-        log.info("token: {}", token);
-        if (token != null && jwtTokenProvider.validateToken(token)) {
+        if (jwtUtil.validateToken(token)) {
             Authentication auth = getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(auth);
-            log.info("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", auth.getName(), request.getRequestURI());
         }
         filterChain.doFilter(request, response);
     }
@@ -54,8 +50,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     }
 
     private Authentication getAuthentication(String token) {
-        String username = jwtTokenProvider.getPayload(token);
-        // UserDetails 로드
+        String username = jwtUtil.getPayload(token);
         CustomUserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }

@@ -8,12 +8,12 @@ import org.springframework.security.oauth2.client.registration.InMemoryClientReg
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.swmaestro.mohaeng.component.jwt.JwtTokenProvider;
+import org.swmaestro.mohaeng.util.jwt.JwtUtil;
 import org.swmaestro.mohaeng.domain.user.KakaoUserInfo;
 import org.swmaestro.mohaeng.domain.user.OAuth2UserInfo;
 import org.swmaestro.mohaeng.domain.user.User;
 import org.swmaestro.mohaeng.dto.LoginResponse;
-import org.swmaestro.mohaeng.exception.ClientRegistrationNotFoundException;
+import org.swmaestro.mohaeng.util.exception.ClientRegistrationNotFoundException;
 import org.swmaestro.mohaeng.repository.UserRepository;
 
 import java.util.Map;
@@ -27,7 +27,7 @@ public class OAuthService {
 
     private final InMemoryClientRegistrationRepository inMemoryRepository;
     private final UserRepository userRepository;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtUtil jwtUtil;
 
     /**
      * 로그인 처리를 위한 메서드
@@ -49,8 +49,8 @@ public class OAuthService {
 
         User user = getUserProfile(provider, token, clientRegistration);
 
-        String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(user.getEmail()));
-        String refreshToken = jwtTokenProvider.createRefreshToken(String.valueOf(user.getEmail()));
+        String accessToken = jwtUtil.createAccessToken(String.valueOf(user.getEmail()));
+        String refreshToken = jwtUtil.createRefreshToken(String.valueOf(user.getEmail()));
 
         return LoginResponse.builder()
                 .id(user.getId())
